@@ -84,17 +84,36 @@ func (s *UserServiceImpl) Login(req *web.UserRequest) (*domain.User, error) {
 	return user, nil
 }
 
-func (s *UserServiceImpl) GetProfile(ctx context.Context, userId uint) (*domain.User, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *UserServiceImpl) GetProfile(userId uint) (*domain.User, error) {
+	return s.repo.GetUserById(userId)
 }
 
-func (s *UserServiceImpl) UpdateProfile(ctx context.Context, userId uint, req *web.UserRequest) error {
-	//TODO implement me
-	panic("implement me")
+func (s *UserServiceImpl) UpdateProfile(userId uint, req *web.UserRequest) error {
+	// validate input
+	if err := s.validate.Var(req.Name, "required,min=3"); err != nil {
+		return errors.New("Invalid Name")
+	}
+	if err := s.validate.Var(req.Email, "required,email"); err != nil {
+		return errors.New("Invalid Email")
+	}
+
+	user, err := s.repo.GetUserById(userId)
+	if err != nil {
+		return err
+	}
+
+	// Prepare updates
+	user.Name = req.Name
+	user.Email = req.Email
+
+	return s.repo.UpdateUser(user)
 }
 
-func (s *UserServiceImpl) LogOut(ctx context.Context, userId uint) error {
-	//TODO implement me
-	panic("implement me")
+func (s *UserServiceImpl) DeleteUser(ctx context.Context, userId uint) error {
+	user, err := s.repo.GetUserById(userId)
+	if err != nil {
+		return errors.New("User Not Found")
+	}
+
+	return s.repo.DeleteUserById(user)
 }

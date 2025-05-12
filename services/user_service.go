@@ -9,7 +9,7 @@ import (
 type UserService interface {
 	Register(req *web.UserRequest) error
 	Login(req *web.UserRequest) (*domain.User, error)
-	GetProfile(ctx context.Context, userId uint) (*domain.User, error)
-	UpdateProfile(ctx context.Context, userId uint, req *web.UserRequest) error
-	LogOut(ctx context.Context, userId uint) error
+	GetProfile(userId uint) (*domain.User, error)
+	UpdateProfile(userId uint, req *web.UserRequest) error
+	DeleteUser(ctx context.Context, userId uint) error
 }
