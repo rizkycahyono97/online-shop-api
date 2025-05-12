@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"github.com/rizkycahyono97/online-shop-api/model/domain"
 	"gorm.io/gorm"
 	"time"
@@ -25,6 +26,9 @@ func (repo *UserRepositoryImpl) CreateUser(user *domain.User) error {
 func (repo *UserRepositoryImpl) GetUserById(id uint) (*domain.User, error) {
 	var user domain.User
 	if err := repo.db.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
 		return nil, err
 	}
 	return &user, nil
@@ -34,6 +38,9 @@ func (repo *UserRepositoryImpl) GetUserById(id uint) (*domain.User, error) {
 func (repo *UserRepositoryImpl) GetUserByEmail(email string) (*domain.User, error) {
 	var user domain.User
 	if err := repo.db.Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
 		return nil, err
 	}
 	return &user, nil
