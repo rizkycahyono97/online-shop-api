@@ -59,3 +59,42 @@ func (s *UserServiceImpl) Register(req *web.UserRequest) error {
 	// Save user to database
 	return s.repo.CreateUser(newUser)
 }
+
+func (s *UserServiceImpl) Login(req *web.UserRequest) (*domain.User, error) {
+	//validation
+	if err := s.validate.Var(req.Email, "required,min=3"); err != nil {
+		return &domain.User{}, errors.New("Invalid Email")
+	}
+	if err := s.validate.Var(req.Password, "required,min=6"); err != nil {
+		return &domain.User{}, errors.New("password must be at least 6 characters")
+	}
+
+	// Find user by email
+	user, err := s.repo.GetUserByEmail(req.Email)
+	if err != nil {
+		return &domain.User{}, errors.New("Failed to find User")
+	}
+
+	// compare password
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password))
+	if err != nil {
+		return &domain.User{}, errors.New("Invalid Password")
+	}
+
+	return user, nil
+}
+
+func (s *UserServiceImpl) GetProfile(ctx context.Context, userId uint) (*domain.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *UserServiceImpl) UpdateProfile(ctx context.Context, userId uint, req *web.UserRequest) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (s *UserServiceImpl) LogOut(ctx context.Context, userId uint) error {
+	//TODO implement me
+	panic("implement me")
+}
