@@ -3,11 +3,11 @@ package services
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/rizkycahyono97/online-shop-api/config"
 	"github.com/rizkycahyono97/online-shop-api/model/domain"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/repositories"
 	"golang.org/x/crypto/bcrypt"
-	"os"
 	"time"
 )
 
@@ -66,7 +66,7 @@ func (s AuthServiceImpl) Login(req *web.UserRequest) (string, error) {
 		"exp":     time.Now().Add(time.Hour * 72).Unix(),
 	})
 
-	secret := os.Getenv("JWT_SECRET")
+	secret := config.GetEnv("JWT_SECRET", "")
 	if secret == "" {
 		return "", errors.New("JWT_SECRET environment variable not set")
 	}
