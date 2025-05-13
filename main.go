@@ -20,13 +20,19 @@ func main() {
 
 	config.InitDB()
 
+	// auth inject
 	authRepo := repositories.NewAuthRepositoryImpl(config.DB)
 	authService := services.NewAuthServiceImpl(authRepo)
 	authController := controller.NewAuthController(authService)
 
+	// user inject
+	userRepo := repositories.NewUserRepository(config.DB)
+	userService := services.NewUserService(userRepo)
+	userController := controller.NewUserController(userService)
+
 	r := gin.Default()
 
-	routes.SetupRoutes(r, authController)
+	routes.SetupRoutes(r, authController, userController)
 
 	r.Run("localhost:8080")
 }

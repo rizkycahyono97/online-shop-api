@@ -6,7 +6,10 @@ import (
 	"github.com/rizkycahyono97/online-shop-api/middleware"
 )
 
-func SetupRoutes(r *gin.Engine, authController *controller.AuthController) {
+func SetupRoutes(
+	r *gin.Engine,
+	authController *controller.AuthController,
+	userController *controller.UserController) {
 	// public routes
 	public := r.Group("/api/v1")
 	{
@@ -19,5 +22,11 @@ func SetupRoutes(r *gin.Engine, authController *controller.AuthController) {
 	protected.Use(middleware.AuthMiddleware())
 	{
 		protected.GET("/")
+
+		// user endpoint
+		protected.GET("/users/:id", userController.GetProfile)
+		protected.GET("/users", userController.GetAllProfiles)
+		protected.PUT("/users/:id", userController.UpdateProfile)
+		protected.DELETE("/users/:id", userController.DeleteProfile)
 	}
 }

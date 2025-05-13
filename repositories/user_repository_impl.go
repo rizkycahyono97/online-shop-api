@@ -13,7 +13,7 @@ type UserRepositoryImpl struct {
 }
 
 // NewUserRepository creates new Instance of UserRepository
-func NewUserRepositoryImpl(db *gorm.DB) UserRepository {
+func NewUserRepository(db *gorm.DB) UserRepository {
 	return &UserRepositoryImpl{db: db}
 }
 
