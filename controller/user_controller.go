@@ -18,9 +18,19 @@ func NewUserController(userService services.UserService) *UserController {
 
 // Get Profile by id
 func (u *UserController) GetProfile(c *gin.Context) {
-	userID := c.GetInt("user_id")
+	idParam := c.Param("id")
 
-	user, err := u.userService.GetProfile(uint(userID))
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "Invalid User ID",
+			Data:    nil,
+		})
+		return
+	}
+
+	user, err := u.userService.GetProfile(uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.ApiResponse{
 			Code:    "NOT_FOUND",
@@ -32,7 +42,7 @@ func (u *UserController) GetProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "OK",
-		Message: "User Profile Fetched Successfully",
+		Message: "User Found",
 		Data:    user,
 	})
 }
