@@ -41,7 +41,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, web.ApiResponse{
 		Code:    "created",
 		Message: "User Registered Successfully",
-		Data:    web.UserReponseFromModel(user),
+		Data:    web.UserResponseFromModel(user),
 	})
 }
 

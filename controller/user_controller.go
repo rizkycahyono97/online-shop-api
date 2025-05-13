@@ -30,6 +30,29 @@ func (u *UserController) GetProfile(c *gin.Context) {
 		return
 	}
 
+	//AUTHORIZATION
+	//ambil user_id dari JWT
+	userIDFromToken, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, web.ApiResponse{
+			Code:    "UNAUTHORIZED",
+			Message: "UNAUTHORIZED",
+		})
+		return
+	}
+
+	// Konversi dari float64 (default MapClaims)
+	userID := uint(userIDFromToken.(float64))
+
+	//hanya akses ke dirinya sendiri
+	if userID != uint(id) {
+		c.JSON(http.StatusForbidden, web.ApiResponse{
+			Code:    "FORBIDDEN",
+			Message: "You are not allowed to access this user",
+		})
+		return
+	}
+
 	user, err := u.userService.GetProfile(uint(id))
 	if err != nil {
 		c.JSON(http.StatusNotFound, web.ApiResponse{
@@ -43,7 +66,7 @@ func (u *UserController) GetProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "OK",
 		Message: "User Found",
-		Data:    user,
+		Data:    web.UserResponseFromModel(user),
 	})
 }
 

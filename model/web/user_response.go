@@ -13,7 +13,7 @@ type UserResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func UserReponseFromModel(user *domain.User) UserResponse {
+func UserResponseFromModel(user *domain.User) UserResponse {
 	return UserResponse{
 		ID:        user.ID,
 		Name:      user.Name,
