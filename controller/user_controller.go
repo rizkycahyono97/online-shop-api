@@ -123,6 +123,30 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 		return
 	}
 
+	// Ambil user_id dan role dari JWT (di-set oleh AuthMiddleware)
+	userIDFromToken, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, web.ApiResponse{
+			Code:    "UNAUTHORIZED",
+			Message: "Unauthorized",
+			Data:    nil,
+		})
+		return
+	}
+
+	role, _ := c.Get("user_role")
+	userID := uint(userIDFromToken.(float64))
+
+	// Cek apakah dia user yang bersangkutan atau admin
+	if userID != uint(id) && role != "admin" {
+		c.JSON(http.StatusForbidden, web.ApiResponse{
+			Code:    "FORBIDDEN",
+			Message: "You are not allowed to access this user",
+			Data:    nil,
+		})
+		return
+	}
+
 	var req web.UserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, web.ApiResponse{

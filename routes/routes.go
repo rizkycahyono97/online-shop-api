@@ -10,10 +10,11 @@ func SetupRoutes(
 	r *gin.Engine,
 	authController *controller.AuthController,
 	userController *controller.UserController) {
-	
+
 	// public routes
 	public := r.Group("/api/v1")
 	{
+		// auth endpoint
 		public.POST("/register", authController.Register)
 		public.POST("/login", authController.Login)
 	}
@@ -26,7 +27,6 @@ func SetupRoutes(
 
 		// user endpoint
 		protected.GET("/users/:id", userController.GetProfile)
-		//protected.GET("/users", userController.GetAllProfiles)
 		protected.PUT("/users/:id", userController.UpdateProfile)
 		protected.DELETE("/users/:id", userController.DeleteProfile)
 	}
