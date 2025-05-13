@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rizkycahyono97/online-shop-api/helpers"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/services"
 	"net/http"
@@ -30,25 +31,12 @@ func (u *UserController) GetProfile(c *gin.Context) {
 		return
 	}
 
-	//AUTHORIZATION
-	//ambil user_id dari JWT
-	userIDFromToken, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, web.ApiResponse{
-			Code:    "UNAUTHORIZED",
-			Message: "UNAUTHORIZED",
-		})
-		return
-	}
-
-	// Konversi dari float64 (default MapClaims)
-	userID := uint(userIDFromToken.(float64))
-
-	//hanya akses ke dirinya sendiri
-	if userID != uint(id) {
+	//reusable with helper
+	if !helpers.IsOwnerOrAdmin(c, uint(id)) {
 		c.JSON(http.StatusForbidden, web.ApiResponse{
 			Code:    "FORBIDDEN",
-			Message: "You are not allowed to access this user",
+			Message: "You are not allowed to update this user",
+			Data:    nil,
 		})
 		return
 	}
@@ -86,7 +74,7 @@ func (u *UserController) GetAllProfiles(c *gin.Context) {
 	if !ok || role != "admin" {
 		c.JSON(http.StatusUnauthorized, web.ApiResponse{
 			Code:    "UNAUTHORIZED",
-			Message: "Unauthorized",
+			Message: "You are not allowed to access this resource",
 			Data:    nil,
 		})
 		return
@@ -123,25 +111,11 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	// Ambil user_id dan role dari JWT (di-set oleh AuthMiddleware)
-	userIDFromToken, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, web.ApiResponse{
-			Code:    "UNAUTHORIZED",
-			Message: "Unauthorized",
-			Data:    nil,
-		})
-		return
-	}
-
-	role, _ := c.Get("user_role")
-	userID := uint(userIDFromToken.(float64))
-
-	// Cek apakah dia user yang bersangkutan atau admin
-	if userID != uint(id) && role != "admin" {
+	//reusable with helper
+	if !helpers.IsOwnerOrAdmin(c, uint(id)) {
 		c.JSON(http.StatusForbidden, web.ApiResponse{
 			Code:    "FORBIDDEN",
-			Message: "You are not allowed to access this user",
+			Message: "You are not allowed to update this user",
 			Data:    nil,
 		})
 		return
@@ -186,25 +160,11 @@ func (u *UserController) DeleteProfile(c *gin.Context) {
 		return
 	}
 
-	// Ambil user_id dan role dari JWT (dari AuthMiddleware)
-	userIDFromToken, exists := c.Get("user_id")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, web.ApiResponse{
-			Code:    "UNAUTHORIZED",
-			Message: "Unauthorized",
-			Data:    nil,
-		})
-		return
-	}
-
-	role, _ := c.Get("user_role")
-	userID := uint(userIDFromToken.(float64))
-
-	// Hanya user itu sendiri atau admin yang boleh hapus
-	if userID != uint(id) && role != "admin" {
+	// reusable, menggunakan helpers
+	if !helpers.IsOwnerOrAdmin(c, uint(id)) {
 		c.JSON(http.StatusForbidden, web.ApiResponse{
 			Code:    "FORBIDDEN",
-			Message: "You are not allowed to access this user",
+			Message: "You are not allowed to delete this user",
 			Data:    nil,
 		})
 		return
