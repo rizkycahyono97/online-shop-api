@@ -17,27 +17,18 @@ func NewUserRepositoryImpl(db *gorm.DB) UserRepository {
 	return &UserRepositoryImpl{db: db}
 }
 
-// CreateUser
-func (repo *UserRepositoryImpl) CreateUser(user *domain.User) error {
-	return repo.db.Create(user).Error
+// GetAllUsers
+func (repo *UserRepositoryImpl) GetUsers() ([]*domain.User, error) {
+	var users []*domain.User
+
+	err := repo.db.Where("deleted_at = ?", "0000-00-00 00:00:00").Find(&users).Error
+	return users, err
 }
 
 // GetUserById
 func (repo *UserRepositoryImpl) GetUserById(id uint) (*domain.User, error) {
 	var user domain.User
 	if err := repo.db.First(&user, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("user not found")
-		}
-		return nil, err
-	}
-	return &user, nil
-}
-
-// GetUserByEmail
-func (repo *UserRepositoryImpl) GetUserByEmail(email string) (*domain.User, error) {
-	var user domain.User
-	if err := repo.db.Where("email = ?", email).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("user not found")
 		}
