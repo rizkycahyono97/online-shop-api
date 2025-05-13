@@ -16,7 +16,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 
-		fmt.Println("Authorization Header:", authHeader) // Log
+		//fmt.Println("Authorization Header:", authHeader) // Log
 
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, web.ApiResponse{
@@ -30,8 +30,8 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// The token should be prefixed with "Bearer "
 		parts := strings.Split(authHeader, " ")
-		
-		fmt.Println("Parts:", parts) // Log
+
+		//fmt.Println("Parts:", parts) // Log
 
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			fmt.Println("Invalid Authorization Header Format") // Log
@@ -42,7 +42,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		tokenString := parts[1]
 
-		fmt.Println("Token String:", tokenString) // Log
+		//fmt.Println("Token String:", tokenString) // Log
 
 		token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -53,7 +53,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		if err != nil || !token.Valid {
 
-			fmt.Println("JWT Parse Error:", err) // Log
+			//fmt.Println("JWT Parse Error:", err) // Log
 
 			c.JSON(http.StatusUnauthorized, web.ApiResponse{
 				Code:    "UNAUTHORIZED",
@@ -67,7 +67,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 
-			fmt.Println("Failed to parse claims") // Log
+			//fmt.Println("Failed to parse claims") // Log
 
 			c.JSON(http.StatusUnauthorized, web.ApiResponse{
 				Code:    "UNAUTHORIZED",
@@ -78,7 +78,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println("Claims:", claims) // Log
+		//fmt.Println("Claims:", claims) // Log
 
 		// Inject user info to context
 		c.Set("user_id", claims["user_id"])

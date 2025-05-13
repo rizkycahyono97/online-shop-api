@@ -186,6 +186,30 @@ func (u *UserController) DeleteProfile(c *gin.Context) {
 		return
 	}
 
+	// Ambil user_id dan role dari JWT (dari AuthMiddleware)
+	userIDFromToken, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, web.ApiResponse{
+			Code:    "UNAUTHORIZED",
+			Message: "Unauthorized",
+			Data:    nil,
+		})
+		return
+	}
+
+	role, _ := c.Get("user_role")
+	userID := uint(userIDFromToken.(float64))
+
+	// Hanya user itu sendiri atau admin yang boleh hapus
+	if userID != uint(id) && role != "admin" {
+		c.JSON(http.StatusForbidden, web.ApiResponse{
+			Code:    "FORBIDDEN",
+			Message: "You are not allowed to access this user",
+			Data:    nil,
+		})
+		return
+	}
+
 	err = u.userService.DeleteProfile(uint(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, web.ApiResponse{
