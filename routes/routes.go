@@ -10,6 +10,7 @@ func SetupRoutes(
 	r *gin.Engine,
 	authController *controller.AuthController,
 	userController *controller.UserController) {
+	
 	// public routes
 	public := r.Group("/api/v1")
 	{
@@ -25,8 +26,16 @@ func SetupRoutes(
 
 		// user endpoint
 		protected.GET("/users/:id", userController.GetProfile)
-		protected.GET("/users", userController.GetAllProfiles)
+		//protected.GET("/users", userController.GetAllProfiles)
 		protected.PUT("/users/:id", userController.UpdateProfile)
 		protected.DELETE("/users/:id", userController.DeleteProfile)
+	}
+
+	// admins routes
+	adminRoutes := r.Group("/api/v1")
+	adminRoutes.Use(middleware.AdminOnly())
+	{
+		//user endpoint
+		adminRoutes.GET("/users", userController.GetAllProfiles)
 	}
 }

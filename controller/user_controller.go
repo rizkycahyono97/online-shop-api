@@ -72,11 +72,32 @@ func (u *UserController) GetProfile(c *gin.Context) {
 
 // Get all profiles
 func (u *UserController) GetAllProfiles(c *gin.Context) {
+	//ambil role dari JWT
+	userRole, exist := c.Get("user_role")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, web.ApiResponse{
+			Code:    "UNAUTHORIZED",
+			Message: "Unauthorized",
+		})
+		return
+	}
+
+	role, ok := userRole.(string)
+	if !ok || role != "admin" {
+		c.JSON(http.StatusUnauthorized, web.ApiResponse{
+			Code:    "UNAUTHORIZED",
+			Message: "Unauthorized",
+			Data:    nil,
+		})
+		return
+	}
+
+	// Jika admin, lanjut ambil data semua user
 	users, err := u.userService.GetAllProfiles()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, web.ApiResponse{
 			Code:    "SERVER_ERROR",
-			Message: "Failed to get Users",
+			Message: "Failed to get users",
 			Data:    nil,
 		})
 		return
