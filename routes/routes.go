@@ -6,7 +6,7 @@ import (
 	"github.com/rizkycahyono97/online-shop-api/middleware"
 )
 
-func SetupRoutes(r *gin.Engine, authController controller.AuthController) {
+func SetupRoutes(r *gin.Engine, authController *controller.AuthController) {
 	// public routes
 	public := r.Group("/api/v1")
 	{
