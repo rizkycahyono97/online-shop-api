@@ -8,6 +8,7 @@ import (
 
 func SetupRoutes(
 	r *gin.Engine,
+	mainController *controller.MainController,
 	authController *controller.AuthController,
 	userController *controller.UserController,
 	productController *controller.ProductController) {
@@ -15,6 +16,9 @@ func SetupRoutes(
 	// public routes
 	public := r.Group("/api/v1")
 	{
+		// Main
+		public.GET("/", mainController.MainController)
+
 		// auth endpoint
 		public.POST("/register", authController.Register)
 		public.POST("/login", authController.Login)
@@ -24,13 +28,11 @@ func SetupRoutes(
 	protected := r.Group("/api/v1")
 	protected.Use(middleware.AuthMiddleware())
 	{
-		protected.GET("/")
-
 		// user endpoint
 		protected.GET("/users/:id", userController.GetProfile)
 		protected.PUT("/users/:id", userController.UpdateProfile)
 
-		//	product endpoint
+		// product endpoint
 		protected.GET("/products", productController.GetAllProducts)
 		protected.GET("/products/:id", productController.GetProductById)
 	}

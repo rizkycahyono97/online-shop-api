@@ -41,7 +41,7 @@ func (p *ProductController) CreateProduct(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, web.ApiResponse{
 		Code:    "CREATED",
-		Message: "User Created Successfully",
+		Message: "Product Created Successfully",
 		Data:    web.ProductResponseFromModel(product),
 	})
 }
