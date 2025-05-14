@@ -16,7 +16,7 @@ type ProductResponse struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-func ProductResponseFromDomain(product *domain.Product) ProductResponse {
+func ProductResponseFromModel(product *domain.Product) ProductResponse {
 	return ProductResponse{
 		ID:          product.ID,
 		Name:        product.Name,
