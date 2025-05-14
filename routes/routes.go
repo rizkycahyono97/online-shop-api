@@ -28,14 +28,14 @@ func SetupRoutes(
 		// user endpoint
 		protected.GET("/users/:id", userController.GetProfile)
 		protected.PUT("/users/:id", userController.UpdateProfile)
-		protected.DELETE("/users/:id", userController.DeleteProfile)
 	}
 
 	// admins routes
 	adminRoutes := r.Group("/api/v1")
-	adminRoutes.Use(middleware.AdminOnly())
+	adminRoutes.Use(middleware.AuthMiddleware(), middleware.AdminOnly())
 	{
 		//user endpoint
 		adminRoutes.GET("/users", userController.GetAllProfiles)
+		adminRoutes.DELETE("/users/:id", userController.DeleteProfile)
 	}
 }

@@ -143,7 +143,7 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "SUCCESS",
 		Message: "User Profile Updated Successfully",
-		Data:    user,
+		Data:    web.UserResponseFromModel(user),
 	})
 }
 
