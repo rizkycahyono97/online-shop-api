@@ -9,7 +9,8 @@ import (
 func SetupRoutes(
 	r *gin.Engine,
 	authController *controller.AuthController,
-	userController *controller.UserController) {
+	userController *controller.UserController,
+	productController *controller.ProductController) {
 
 	// public routes
 	public := r.Group("/api/v1")
@@ -28,6 +29,10 @@ func SetupRoutes(
 		// user endpoint
 		protected.GET("/users/:id", userController.GetProfile)
 		protected.PUT("/users/:id", userController.UpdateProfile)
+
+		//	product endpoint
+		protected.GET("/products", productController.GetAllProducts)
+		protected.GET("/products/:id", productController.GetProductById)
 	}
 
 	// admins routes
@@ -37,5 +42,10 @@ func SetupRoutes(
 		//user endpoint
 		adminRoutes.GET("/users", userController.GetAllProfiles)
 		adminRoutes.DELETE("/users/:id", userController.DeleteProfile)
+
+		// product endpoint
+		adminRoutes.POST("/products", productController.CreateProduct)
+		adminRoutes.PUT("/products/:id", productController.UpdateProduct)
+		adminRoutes.DELETE("/products/:id", productController.DeleteProduct)
 	}
 }
