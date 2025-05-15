@@ -58,6 +58,12 @@ func (s CartServiceImpl) AddItemToCart(userID uint, productID uint, quantity uin
 		return nil, err
 	}
 
+	// update stock di product
+	product.Stock -= quantity
+	if _, err := s.productRepo.UpdateProduct(product); err != nil {
+		return nil, errors.New("failed to update product stock")
+	}
+
 	return item, nil
 }
 

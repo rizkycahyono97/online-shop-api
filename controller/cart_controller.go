@@ -16,9 +16,11 @@ func NewCartController(cartService services.CartService) *CartController {
 	return &CartController{cartService: cartService}
 }
 
-// Get items in authenticated user's cart
+// Get all items in authenticated user's cart
 func (cc *CartController) GetCartItems(c *gin.Context) {
-	userID := c.MustGet("userID").(uint)
+	// ambil user_id dari JWT
+	userIDFloat := c.MustGet("user_id").(float64)
+	userID := uint(userIDFloat)
 
 	items, err := cc.cartService.GetItemsCartByUserID(userID)
 	if err != nil {
@@ -39,7 +41,8 @@ func (cc *CartController) GetCartItems(c *gin.Context) {
 
 // Add item to cart
 func (cc *CartController) AddItem(c *gin.Context) {
-	userID := c.MustGet("userID").(uint)
+	userIDFloat := c.MustGet("user_id").(float64)
+	userID := uint(userIDFloat)
 
 	var req web.AddItemToCartRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -70,7 +73,7 @@ func (cc *CartController) AddItem(c *gin.Context) {
 
 // remove item from cart
 func (cc *CartController) RemoveItemFromCart(c *gin.Context) {
-	userID := c.MustGet("userID").(uint)
+	userID := c.MustGet("user_id").(uint)
 
 	productIDParam := c.Param("product_id")
 	productID, err := strconv.Atoi(productIDParam)
