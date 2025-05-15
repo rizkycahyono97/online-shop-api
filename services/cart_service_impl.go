@@ -61,6 +61,7 @@ func (s CartServiceImpl) AddItemToCart(userID uint, productID uint, quantity uin
 	return item, nil
 }
 
+// Delete item from cart
 func (s CartServiceImpl) RemoveItemFromCart(cartID uint, productID uint) error {
 	// cari berdasarkan user
 	cart, err := s.cartRepo.GetCartByUserID(cartID)
