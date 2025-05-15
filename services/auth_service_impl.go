@@ -45,6 +45,15 @@ func (s AuthServiceImpl) Register(req *web.UserRequest) (*domain.User, error) {
 		return nil, err
 	}
 
+	// otomatis membuat cart
+	cart := &domain.Cart{
+		UserID: uint(user.ID),
+	}
+	_, err = s.repo.AddCart(cart)
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 

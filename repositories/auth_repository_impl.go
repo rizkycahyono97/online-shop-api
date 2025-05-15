@@ -28,3 +28,11 @@ func (repo AuthRepositoryImpl) FindByEmail(email string) (*domain.User, error) {
 func (repo AuthRepositoryImpl) CreateUser(user *domain.User) error {
 	return repo.db.Create(user).Error
 }
+
+// menambah cart untuk setiap user
+func (repo AuthRepositoryImpl) AddCart(cart *domain.Cart) (*domain.Cart, error) {
+	if err := repo.db.Create(cart).Error; err != nil {
+		return nil, err
+	}
+	return cart, nil
+}
