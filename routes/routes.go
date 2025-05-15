@@ -11,7 +11,8 @@ func SetupRoutes(
 	mainController *controller.MainController,
 	authController *controller.AuthController,
 	userController *controller.UserController,
-	productController *controller.ProductController) {
+	productController *controller.ProductController,
+	cartController *controller.CartController) {
 
 	// public routes
 	public := r.Group("/api/v1")
@@ -35,6 +36,11 @@ func SetupRoutes(
 		// product endpoint
 		protected.GET("/products", productController.GetAllProducts)
 		protected.GET("/products/:id", productController.GetProductById)
+
+		// cart endpoint
+		protected.GET("/cart/items", cartController.GetCartItems)
+		protected.POST("/cart/items", cartController.AddItem)
+		protected.DELETE("/cart/items/:product_id", cartController.RemoveItemFromCart)
 	}
 
 	// admins routes

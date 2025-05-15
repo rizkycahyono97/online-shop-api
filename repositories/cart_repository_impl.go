@@ -9,7 +9,7 @@ type CartRepositoryImpl struct {
 	db *gorm.DB
 }
 
-func NewCartRepositoryImpl(db *gorm.DB) CartRepository {
+func NewCartRepository(db *gorm.DB) CartRepository {
 	return &CartRepositoryImpl{db: db}
 }
 

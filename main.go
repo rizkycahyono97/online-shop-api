@@ -38,9 +38,14 @@ func main() {
 	productService := services.NewProductService(productRepo)
 	productController := controller.NewProductController(productService)
 
+	// cart inject
+	cartRepo := repositories.NewCartRepository(config.DB)
+	cartService := services.NewCartService(cartRepo, productRepo)
+	cartController := controller.NewCartController(cartService)
+
 	r := gin.Default()
 
-	routes.SetupRoutes(r, mainController, authController, userController, productController)
+	routes.SetupRoutes(r, mainController, authController, userController, productController, cartController)
 
 	r.Run("localhost:8080")
 }
