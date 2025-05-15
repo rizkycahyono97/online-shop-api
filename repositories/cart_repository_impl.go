@@ -13,6 +13,14 @@ func NewCartRepositoryImpl(db *gorm.DB) CartRepository {
 	return &CartRepositoryImpl{db: db}
 }
 
+func (repo CartRepositoryImpl) GetCartByUserID(userID uint) (*domain.Cart, error) {
+	var cart domain.Cart
+	if err := repo.db.Preload("CartItems").Where("user_id = ?", userID).First(&cart).Error; err != nil {
+		return nil, err
+	}
+	return &cart, nil
+}
+
 // GetItemsCartByUserID -> mengambil semua item yang di cart
 func (repo CartRepositoryImpl) GetItemsCartByUserID(userID uint) ([]*domain.CartItems, error) {
 	// ambil cart berdasarkan userID
