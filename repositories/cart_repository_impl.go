@@ -39,7 +39,7 @@ func (repo CartRepositoryImpl) GetItemsCartByUserID(userID uint) ([]*domain.Cart
 }
 
 // GetAllCartWithItems -> mengembalikan semua carts beserta user dan items
-func (repo CartRepositoryImpl) GetAllCartWithItems() ([]*domain.Cart, error) {
+func (repo CartRepositoryImpl) GetAllCartsWithItems() ([]*domain.Cart, error) {
 	var carts []*domain.Cart
 	err := repo.db.Preload("User").Preload("CartItems.Product").Find(&carts).Error
 	if err != nil {

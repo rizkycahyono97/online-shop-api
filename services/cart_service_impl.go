@@ -29,6 +29,10 @@ func (s CartServiceImpl) GetItemsCartByUserID(userID uint) ([]*domain.CartItems,
 	return items, nil
 }
 
+func (s CartServiceImpl) GetAllCartsWithItems() ([]*domain.Cart, error) {
+	return s.cartRepo.GetAllCartsWithItems()
+}
+
 // Add item to cart with validation
 func (s CartServiceImpl) AddItemToCart(userID uint, productID uint, quantity uint) (*domain.CartItems, error) {
 	if quantity == 0 {
