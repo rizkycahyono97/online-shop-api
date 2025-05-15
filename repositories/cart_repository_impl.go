@@ -79,6 +79,15 @@ func (repo CartRepositoryImpl) AddItemToCart(cartID, productID uint, quantity ui
 	return &cartItem, nil
 }
 
+// updateCartItem -> update item in cart
+func (repo CartRepositoryImpl) UpdateCartItem(item *domain.CartItems) error {
+	if err := repo.db.Save(item).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// removeItemFromCart -> menghapus item di cart
 func (repo CartRepositoryImpl) RemoveItemFromCart(cartID uint, productID uint) error {
 	// menghapus item dari cart berdasarkan cart_id dan product_id
 	err := repo.db.Where("cart_id = ? AND product_id = ?", cartID, productID).Delete(&domain.CartItems{}).Error

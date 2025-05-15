@@ -68,12 +68,61 @@ func (s CartServiceImpl) AddItemToCart(userID uint, productID uint, quantity uin
 }
 
 // Delete item from cart
-func (s CartServiceImpl) RemoveItemFromCart(cartID uint, productID uint) error {
+func (s CartServiceImpl) RemoveItemFromCart(userID uint, productID uint, quantity uint) error {
 	// cari berdasarkan user
-	cart, err := s.cartRepo.GetCartByUserID(cartID)
+	cart, err := s.cartRepo.GetCartByUserID(userID)
 	if err != nil {
-		return err
+		return errors.New("Cart Not Found")
 	}
 
-	return s.cartRepo.RemoveItemFromCart(cart.ID, productID)
+	// ambil semua item di cart
+	cartItems, err := s.cartRepo.GetItemsCartByUserID(userID)
+	if err != nil {
+		return errors.New("Failed to get cart items")
+	}
+
+	var cartItem *domain.CartItems
+	for _, item := range cartItems {
+		if item.ProductID == productID {
+			cartItem = item
+			break
+		}
+	}
+
+	if cartItem == nil {
+		return errors.New("cart item not found")
+	}
+
+	// ambil product untuk update stock
+	product, err := s.productRepo.FindProductByID(productID)
+	if err != nil {
+		return errors.New("Product not found")
+	}
+
+	// jika quantity >= current, maka hapus item
+	if quantity >= cartItem.Quantity {
+		// kembalikan seluruh stock ke product
+		product.Stock += cartItem.Quantity
+
+		if _, err := s.productRepo.UpdateProduct(product); err != nil {
+			return errors.New("failed to update product stock")
+		}
+
+		// hapus item dari cart
+		return s.cartRepo.RemoveItemFromCart(cart.ID, productID)
+	}
+
+	// jika quantity < current, kurangi cart item dan kembalikan stock sesuai quantity
+	cartItem.Quantity -= quantity
+	product.Stock += quantity
+
+	if err := s.cartRepo.UpdateCartItem(cartItem); err != nil {
+		return errors.New("failed to update cart item quantity")
+	}
+
+	if _, err := s.productRepo.UpdateProduct(product); err != nil {
+		return errors.New("failed to update product stock")
+	}
+
+	return nil
 }

@@ -58,7 +58,7 @@ func (cc *CartController) AddItem(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, web.ApiResponse{
 			Code:    "INTERNAL_SERVER_ERROR",
-			Message: "Failed to add item to cart",
+			Message: "Failed to add item to cart, Stock is 0",
 			Data:    nil,
 		})
 		return
@@ -73,10 +73,11 @@ func (cc *CartController) AddItem(c *gin.Context) {
 
 // remove item from cart
 func (cc *CartController) RemoveItemFromCart(c *gin.Context) {
-	userID := c.MustGet("user_id").(uint)
+	userIDFloat := c.MustGet("user_id").(float64)
+	userID := uint(userIDFloat)
 
 	productIDParam := c.Param("product_id")
-	productID, err := strconv.Atoi(productIDParam)
+	productIDUint, err := strconv.Atoi(productIDParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, web.ApiResponse{
 			Code:    "BAD_REQUEST",
@@ -86,11 +87,23 @@ func (cc *CartController) RemoveItemFromCart(c *gin.Context) {
 		return
 	}
 
-	err = cc.cartService.RemoveItemFromCart(userID, uint(productID))
+	productID := uint(productIDUint)
+	var req web.RemoveItemFromCartRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "Invalid Request or missing quantity",
+			Data:    nil,
+		})
+		return
+	}
+
+	err = cc.cartService.RemoveItemFromCart(userID, productID, req.Quantity)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, web.ApiResponse{
 			Code:    "INTERNAL_SERVER_ERROR",
-			Message: "Failed to remove item from cart",
+			Message: "Failed to add item to cart, Stock is 0",
 			Data:    nil,
 		})
 		return
@@ -98,7 +111,7 @@ func (cc *CartController) RemoveItemFromCart(c *gin.Context) {
 
 	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "SUCCESS",
-		Message: "Cart Items Remove Success",
+		Message: "Item Remove Successfully",
 		Data:    nil,
 	})
 }
