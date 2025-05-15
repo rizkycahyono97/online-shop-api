@@ -29,6 +29,7 @@ func (s CartServiceImpl) GetItemsCartByUserID(userID uint) ([]*domain.CartItems,
 	return items, nil
 }
 
+// Get All Cart with Item -> mengemnalikan semua carts dan juga semua users
 func (s CartServiceImpl) GetAllCartsWithItems() ([]*domain.Cart, error) {
 	return s.cartRepo.GetAllCartsWithItems()
 }

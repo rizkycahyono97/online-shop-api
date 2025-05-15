@@ -39,6 +39,25 @@ func (cc *CartController) GetCartItems(c *gin.Context) {
 	})
 }
 
+// mengemnalikan semua carts dan juga semua users
+func (cc *CartController) GetAllCarts(c *gin.Context) {
+	carts, err := cc.cartService.GetAllCartsWithItems()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.ApiResponse{
+			Code:    "INTERNAL_SERVER_ERROR",
+			Message: "Failed to fetch cart items",
+			Data:    nil,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "SUCCESS",
+		Message: "Cart Items Fetch Success",
+		Data:    web.CartAdminResponseFromModels(carts),
+	})
+}
+
 // Add item to cart
 func (cc *CartController) AddItem(c *gin.Context) {
 	userIDFloat := c.MustGet("user_id").(float64)

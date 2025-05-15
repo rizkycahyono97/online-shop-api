@@ -55,5 +55,8 @@ func SetupRoutes(
 		adminRoutes.POST("/products", productController.CreateProduct)
 		adminRoutes.PUT("/products/:id", productController.UpdateProduct)
 		adminRoutes.DELETE("/products/:id", productController.DeleteProduct)
+
+		// cart endpoint
+		adminRoutes.GET("/cart", cartController.GetAllCarts)
 	}
 }

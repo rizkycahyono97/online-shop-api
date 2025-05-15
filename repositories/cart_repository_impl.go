@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"github.com/rizkycahyono97/online-shop-api/model/domain"
 	"gorm.io/gorm"
 )
@@ -43,7 +44,7 @@ func (repo CartRepositoryImpl) GetAllCartsWithItems() ([]*domain.Cart, error) {
 	var carts []*domain.Cart
 	err := repo.db.Preload("User").Preload("CartItems.Product").Find(&carts).Error
 	if err != nil {
-		return nil, err
+		return nil, errors.New("error di repo")
 	}
 	return carts, nil
 }
