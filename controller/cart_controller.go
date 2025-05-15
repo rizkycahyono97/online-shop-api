@@ -35,7 +35,7 @@ func (cc *CartController) GetCartItems(c *gin.Context) {
 	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "SUCCESS",
 		Message: "Cart Items Fetch Success",
-		Data:    items,
+		Data:    web.CartItemsResponseFromModels(items),
 	})
 }
 
@@ -67,7 +67,7 @@ func (cc *CartController) AddItem(c *gin.Context) {
 	c.JSON(http.StatusCreated, web.ApiResponse{
 		Code:    "CREATED",
 		Message: "Cart Items Add Success",
-		Data:    item,
+		Data:    web.CartItemResponseFromModels(item),
 	})
 }
 

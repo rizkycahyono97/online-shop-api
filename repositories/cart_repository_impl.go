@@ -40,16 +40,22 @@ func (repo CartRepositoryImpl) GetItemsCartByUserID(userID uint) ([]*domain.Cart
 
 // AddItemToCart -> menambahkan item ke cart
 func (repo CartRepositoryImpl) AddItemToCart(cartID, productID uint, quantity uint) (*domain.CartItems, error) {
-	// Cek apakah produk sudah ada di cart
 	var cartItem domain.CartItems
-	err := repo.db.Where("cart_id = ? AND product_id = ?", cartID, productID).First(&cartItem).Error
 
+	// Cek apakah produk sudah ada di cart
+	err := repo.db.Where("cart_id = ? AND product_id = ?", cartID, productID).First(&cartItem).Error
 	if err == nil {
 		// Jika item sudah ada, update quantity
 		cartItem.Quantity += quantity
 		if err := repo.db.Save(&cartItem).Error; err != nil {
 			return nil, err
 		}
+
+		// preload product
+		if err := repo.db.Preload("Product").First(&cartItem, cartItem.ID).Error; err != nil {
+			return nil, err
+		}
+
 		return &cartItem, nil
 	}
 
@@ -62,6 +68,11 @@ func (repo CartRepositoryImpl) AddItemToCart(cartID, productID uint, quantity ui
 
 	// Simpan item ke cart
 	if err := repo.db.Create(&cartItem).Error; err != nil {
+		return nil, err
+	}
+
+	// Preload Product setelah create, pakai ID
+	if err := repo.db.Preload("Product").First(&cartItem, cartItem.ID).Error; err != nil {
 		return nil, err
 	}
 
