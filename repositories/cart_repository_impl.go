@@ -13,23 +13,58 @@ func NewCartRepositoryImpl(db *gorm.DB) CartRepository {
 	return &CartRepositoryImpl{db: db}
 }
 
-// GetCartByUserID
-func (repo CartRepositoryImpl) GetCartByUserID(userID uint) (*domain.Cart, error) {
-	//TODO implement me
-	panic("implement me")
+// GetItemsCartByUserID -> mengambil semua item yang di cart
+func (repo CartRepositoryImpl) GetItemsCartByUserID(userID uint) ([]*domain.CartItems, error) {
+	// ambil cart berdasarkan userID
+	var cart *domain.Cart
+	if err := repo.db.Where("user_id = ?", userID).First(&cart).Error; err != nil {
+		return nil, err
+	}
+
+	// ambil cartitems berdasarkan cartID, sekaligus ambil products juga
+	var cartItems []*domain.CartItems
+	if err := repo.db.Preload("Product").Where("cart_id = ?", cart.ID).Find(&cartItems).Error; err != nil {
+		return nil, err
+	}
+
+	return cartItems, nil
 }
 
-func (repo CartRepositoryImpl) AddItemToCart(cartID uint, productID uint, quantity uint) (*domain.Cart, error) {
-	//TODO implement me
-	panic("implement me")
+// AddItemToCart -> menambahkan item ke cart
+func (repo CartRepositoryImpl) AddItemToCart(cartID, productID uint, quantity uint) (*domain.CartItems, error) {
+	// Cek apakah produk sudah ada di cart
+	var cartItem domain.CartItems
+	err := repo.db.Where("cart_id = ? AND product_id = ?", cartID, productID).First(&cartItem).Error
+
+	if err == nil {
+		// Jika item sudah ada, update quantity
+		cartItem.Quantity += quantity
+		if err := repo.db.Save(&cartItem).Error; err != nil {
+			return nil, err
+		}
+		return &cartItem, nil
+	}
+
+	// Jika item belum ada, tambahkan item baru
+	cartItem = domain.CartItems{
+		CartID:    cartID,
+		ProductID: productID,
+		Quantity:  quantity,
+	}
+
+	// Simpan item ke cart
+	if err := repo.db.Create(&cartItem).Error; err != nil {
+		return nil, err
+	}
+
+	return &cartItem, nil
 }
 
 func (repo CartRepositoryImpl) RemoveItemFromCart(cartID uint, productID uint) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (repo CartRepositoryImpl) DeleteCart(cartID uint) error {
-	//TODO implement me
-	panic("implement me")
+	// menghapus item dari cart berdasarkan cart_id dan product_id
+	err := repo.db.Where("cart_id = ? AND product_id = ?", cartID, productID).Delete(&domain.CartItems{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
