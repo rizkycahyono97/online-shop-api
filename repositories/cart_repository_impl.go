@@ -21,7 +21,7 @@ func (repo CartRepositoryImpl) GetCartByUserID(userID uint) (*domain.Cart, error
 	return &cart, nil
 }
 
-// GetItemsCartByUserID -> mengambil semua item yang di cart
+// GetItemsCartByUserID -> mengambil semua items yang di cart berdasarkan user_id
 func (repo CartRepositoryImpl) GetItemsCartByUserID(userID uint) ([]*domain.CartItems, error) {
 	// ambil cart berdasarkan userID
 	var cart *domain.Cart
@@ -36,6 +36,16 @@ func (repo CartRepositoryImpl) GetItemsCartByUserID(userID uint) ([]*domain.Cart
 	}
 
 	return cartItems, nil
+}
+
+// GetAllCartWithItems -> mengembalikan semua carts beserta user dan items
+func (repo CartRepositoryImpl) GetAllCartWithItems() ([]*domain.Cart, error) {
+	var carts []*domain.Cart
+	err := repo.db.Preload("User").Preload("CartItems.Product").Find(&carts).Error
+	if err != nil {
+		return nil, err
+	}
+	return carts, nil
 }
 
 // AddItemToCart -> menambahkan item ke cart
