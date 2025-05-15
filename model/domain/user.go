@@ -11,6 +11,8 @@ type User struct {
 	CreatedAt time.Time `json:"created_at" gorm:"type:DATETIME;column:created_at; autoCreateTime"`
 	UpdatedAt time.Time `json:"updated_at" gorm:"type:DATETIME;column:updated_at; autoUpdateTime"`
 	DeletedAt time.Time `json:"deleted_at" gorm:"column:deleted_at;type:DATETIME;index"`
+
+	Orders []Order `json:"orders" gorm:"foreignkey:UserID"`
 }
 
 // nama table
