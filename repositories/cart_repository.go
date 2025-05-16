@@ -9,4 +9,5 @@ type CartRepository interface {
 	AddItemToCart(cartID uint, productID uint, quantity uint) (*domain.CartItems, error)
 	UpdateCartItem(item *domain.CartItems) error
 	RemoveItemFromCart(cartID uint, productID uint) error
+	ClearCart(cartID uint) error
 }

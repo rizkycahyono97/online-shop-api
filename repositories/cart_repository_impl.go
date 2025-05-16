@@ -107,3 +107,8 @@ func (repo CartRepositoryImpl) RemoveItemFromCart(cartID uint, productID uint) e
 	}
 	return nil
 }
+
+// ClearCart -> untuk menghapus historycart
+func (repo CartRepositoryImpl) ClearCart(cartID uint) error {
+	return repo.db.Where("cart_id = ?", cartID).Delete(&domain.CartItems{}).Error
+}
