@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/rizkycahyono97/online-shop-api/model/domain"
+	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/repositories"
 	"time"
 )
@@ -25,7 +26,7 @@ func NewOrderService(
 	}
 }
 
-func (s OrderServiceImpl) CreateOrder(userID uint) (*domain.Order, error) {
+func (s OrderServiceImpl) CreateOrder(userID uint, req *web.CreateOrderRequest) (*domain.Order, error) {
 	// ambil cart dan item dari user
 	cartItems, err := s.cartRepo.GetItemsCartByUserID(userID)
 	if err != nil || len(cartItems) == 0 {
@@ -62,6 +63,7 @@ func (s OrderServiceImpl) CreateOrder(userID uint) (*domain.Order, error) {
 		UserID:      userID,
 		TotalAmount: totalAmount,
 		Status:      "pending",
+		Address:     req.Address,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		OrderItems:  orderItems,

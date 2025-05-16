@@ -8,6 +8,7 @@ type Order struct {
 	User        User      `json:"user" gorm:"foreignkey:UserID"`
 	TotalAmount float64   `json:"total_amount" gorm:"column:total_amount; NOT NULL;"`
 	Status      string    `json:"status" gorm:"column:status; NOT NULL"`
+	Address     string    `json:"address" gorm:"column:address; NOT NULL;"`
 	CreatedAt   time.Time `json:"created_at" gorm:"type:DATETIME;column:created_at; autoCreateTime"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"type:DATETIME;column:updated_at; autoUpdateTime"`
 
