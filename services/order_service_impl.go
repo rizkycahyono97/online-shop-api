@@ -74,7 +74,7 @@ func (s OrderServiceImpl) CreateOrder(userID uint, req *web.CreateOrderRequest) 
 		return nil, errors.New("failed to create order")
 	}
 
-	orderWithItems, err := s.orderRepo.GetOrderByID(createOrder.ID)
+	orderWithItems, err := s.orderRepo.GetOrderByID(createOrder.ID, userID)
 	if err != nil {
 		return nil, errors.New("Failed to fetch created order")
 	}
@@ -87,8 +87,13 @@ func (s OrderServiceImpl) CreateOrder(userID uint, req *web.CreateOrderRequest) 
 	return orderWithItems, nil
 }
 
-func (s OrderServiceImpl) GetOrderByID(orderID uint) (*domain.Order, error) {
-	return s.orderRepo.GetOrderByID(orderID)
+func (s OrderServiceImpl) GetOrderByID(orderID, userID uint) (*web.OrderResponse, error) {
+	order, err := s.orderRepo.GetOrderByID(orderID, userID)
+	if err != nil {
+		return nil, errors.New("order not found or you are not authorized")
+	}
+
+	return web.OrderResponseFromModels(order), nil
 }
 
 func (s OrderServiceImpl) GetOrderByUserID(userID uint) ([]*domain.Order, error) {
@@ -100,7 +105,7 @@ func (s OrderServiceImpl) GetAllOrders() ([]*domain.Order, error) {
 }
 
 func (s *OrderServiceImpl) CancelOrder(userID, orderID uint) error {
-	order, err := s.orderRepo.GetOrderByID(orderID)
+	order, err := s.orderRepo.GetOrderByID(orderID, userID)
 	if err != nil {
 		return errors.New("order not found")
 	}
@@ -114,7 +119,7 @@ func (s *OrderServiceImpl) CancelOrder(userID, orderID uint) error {
 }
 
 func (s *OrderServiceImpl) ConfirmOrder(userID uint, orderID uint) error {
-	order, err := s.orderRepo.GetOrderByID(orderID)
+	order, err := s.orderRepo.GetOrderByID(orderID, userID)
 	if err != nil {
 		return errors.New("Order not found")
 	}

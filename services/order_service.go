@@ -7,7 +7,7 @@ import (
 
 type OrderService interface {
 	CreateOrder(userID uint, req *web.CreateOrderRequest) (*domain.Order, error)
-	GetOrderByID(orderID uint) (*domain.Order, error)
+	GetOrderByID(orderID, userID uint) (*web.OrderResponse, error)
 	GetOrderByUserID(userID uint) ([]*domain.Order, error)
 	GetAllOrders() ([]*domain.Order, error)
 	CancelOrder(UserID uint, orderID uint) error

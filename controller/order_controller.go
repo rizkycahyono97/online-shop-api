@@ -34,7 +34,7 @@ func (oc *OrderController) CreateOrder(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, web.ApiResponse{
 			Code:    "INTERNAL_ERROR",
-			Message: "Failed to create order",
+			Message: err.Error(),
 			Data:    nil,
 		})
 		return
@@ -63,7 +63,7 @@ func (oc *OrderController) GetUserOrders(c *gin.Context) {
 
 	var response []web.OrderResponse
 	for _, order := range orders {
-		response = append(response, web.OrderResponseFromModels(order))
+		response = append(response, *web.OrderResponseFromModels(order))
 	}
 
 	c.JSON(http.StatusOK, web.ApiResponse{
@@ -75,23 +75,33 @@ func (oc *OrderController) GetUserOrders(c *gin.Context) {
 
 // GetOrderById -> untuk mengambil order berdasarkan id
 func (oc *OrderController) GetOrderByID(c *gin.Context) {
-	orderIDStr := c.Param("id")
-	orderID, err := strconv.Atoi(orderIDStr)
-
-	order, err := oc.orderService.GetOrderByID(uint(orderID))
+	orderIDParam := c.Param("id")
+	orderIDUint, err := strconv.ParseUint(orderIDParam, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.ApiResponse{
-			Code:    "NOT_FOUND",
-			Message: "Order Not Found",
-			Data:    nil,
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "Invalid order ID",
+		})
+		return
+	}
+
+	// Ambil userID dari JWT context
+	userIDFloat := c.MustGet("user_id").(float64)
+	userID := uint(userIDFloat)
+
+	order, err := oc.orderService.GetOrderByID(uint(orderIDUint), userID)
+	if err != nil {
+		c.JSON(http.StatusForbidden, web.ApiResponse{
+			Code:    "FORBIDDEN",
+			Message: "You are not allowed to access this order",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "SUCCESS",
-		Message: "Successfully fetched order",
-		Data:    web.OrderResponseFromModels(order),
+		Message: "Order fetched successfully",
+		Data:    order,
 	})
 }
 

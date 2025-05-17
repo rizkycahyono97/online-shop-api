@@ -51,7 +51,7 @@ func (r OrderRepositoryImpl) GetAllOrders() ([]*domain.Order, error) {
 	return orders, nil
 }
 
-func (r OrderRepositoryImpl) GetOrderByID(orderID uint) (*domain.Order, error) {
+func (r OrderRepositoryImpl) GetOrderByID(orderID, userID uint) (*domain.Order, error) {
 	var order domain.Order
 
 	err := r.db.
@@ -59,7 +59,8 @@ func (r OrderRepositoryImpl) GetOrderByID(orderID uint) (*domain.Order, error) {
 		Preload("OrderItems").
 		Preload("OrderItems.Product").
 		Preload("Payment").
-		First(&order, orderID).Error
+		Where("id = ? AND user_id = ?", orderID, userID).
+		First(&order).Error
 
 	if err != nil {
 		return nil, err

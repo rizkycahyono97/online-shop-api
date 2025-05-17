@@ -25,7 +25,7 @@ type OrderResponse struct {
 }
 
 // helper for Order Response
-func OrderResponseFromModels(order *domain.Order) OrderResponse {
+func OrderResponseFromModels(order *domain.Order) *OrderResponse {
 	items := make([]OrderItemResponse, 0)
 	for _, item := range order.OrderItems {
 		items = append(items, OrderItemResponse{
@@ -36,7 +36,7 @@ func OrderResponseFromModels(order *domain.Order) OrderResponse {
 		})
 	}
 
-	return OrderResponse{
+	return &OrderResponse{
 		ID:          order.ID,
 		UserID:      order.UserID,
 		TotalAmount: order.TotalAmount,

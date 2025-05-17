@@ -7,7 +7,7 @@ type OrderRepository interface {
 	CreateOrderItems(items []*domain.OrderItem) error
 	GetOrderByUserID(userID uint) ([]*domain.Order, error)
 	GetAllOrders() ([]*domain.Order, error)
-	GetOrderByID(orderID uint) (*domain.Order, error)
+	GetOrderByID(orderID, userID uint) (*domain.Order, error)
 	UpdateOrder(order *domain.Order) (*domain.Order, error)
 	UpdateOrderStatus(orderID uint, status string) error
 }
