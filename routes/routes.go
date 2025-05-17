@@ -12,7 +12,8 @@ func SetupRoutes(
 	authController *controller.AuthController,
 	userController *controller.UserController,
 	productController *controller.ProductController,
-	cartController *controller.CartController) {
+	cartController *controller.CartController,
+	orderController *controller.OrderController) {
 
 	// public routes
 	public := r.Group("/api/v1")
@@ -58,5 +59,8 @@ func SetupRoutes(
 
 		// cart endpoint
 		adminRoutes.GET("/cart", cartController.GetAllCarts)
+
+		// orders endpoint
+		adminRoutes.GET("/orders", orderController.GetUserOrders)
 	}
 }
