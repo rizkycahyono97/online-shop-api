@@ -29,7 +29,7 @@ func (r OrderRepositoryImpl) CreateOrderItems(items []*domain.OrderItem) error {
 
 func (r OrderRepositoryImpl) GetOrderByUserID(userID uint) ([]*domain.Order, error) {
 	var orders []*domain.Order
-	err := r.db.Preload("OrderItems.Product").Preload("payment").
+	err := r.db.Preload("OrderItems.Product").Preload("Payment").
 		Where("user_id = ?", userID).
 		Order("created_at desc").
 		Find(&orders).Error

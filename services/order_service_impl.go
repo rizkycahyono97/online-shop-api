@@ -74,12 +74,17 @@ func (s OrderServiceImpl) CreateOrder(userID uint, req *web.CreateOrderRequest) 
 		return nil, errors.New("failed to create order")
 	}
 
+	orderWithItems, err := s.orderRepo.GetOrderByID(createOrder.ID)
+	if err != nil {
+		return nil, errors.New("Failed to fetch created order")
+	}
+
 	// Hapus cart setelah checkout
 	if err := s.cartRepo.ClearCart(userID); err != nil {
 		return nil, err
 	}
 
-	return createOrder, nil
+	return orderWithItems, nil
 }
 
 func (s OrderServiceImpl) GetOrderByID(orderID uint) (*domain.Order, error) {

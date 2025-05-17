@@ -42,6 +42,9 @@ func SetupRoutes(
 		protected.GET("/cart/items", cartController.GetCartItems)
 		protected.POST("/cart/items", cartController.AddItem)
 		protected.DELETE("/cart/items/:product_id", cartController.RemoveItemFromCart)
+
+		// order endpoint
+		protected.POST("/orders", orderController.CreateOrder)
 	}
 
 	// admins routes
