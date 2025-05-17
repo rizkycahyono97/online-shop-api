@@ -73,3 +73,7 @@ func (r OrderRepositoryImpl) UpdateOrder(order *domain.Order) (*domain.Order, er
 	}
 	return order, nil
 }
+
+func (r OrderRepositoryImpl) UpdateOrderStatus(orderID uint, status string) error {
+	return r.db.Model(&domain.Order{}).Where("id = ?", orderID).Update("status", status).Error
+}

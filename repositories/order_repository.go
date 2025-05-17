@@ -9,4 +9,5 @@ type OrderRepository interface {
 	GetAllOrders() ([]*domain.Order, error)
 	GetOrderByID(orderID uint) (*domain.Order, error)
 	UpdateOrder(order *domain.Order) (*domain.Order, error)
+	UpdateOrderStatus(orderID uint, status string) error
 }

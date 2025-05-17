@@ -99,22 +99,32 @@ func (s OrderServiceImpl) GetAllOrders() ([]*domain.Order, error) {
 	return s.orderRepo.GetAllOrders()
 }
 
-func (s OrderServiceImpl) CancelOrder(UserID uint) (*domain.Order, error) {
-	order, err := s.orderRepo.GetOrderByID(UserID)
+func (s *OrderServiceImpl) CancelOrder(userID, orderID uint) error {
+	order, err := s.orderRepo.GetOrderByID(orderID)
 	if err != nil {
-		return nil, errors.New("order not found")
+		return errors.New("order not found")
 	}
-
-	if order.UserID != UserID {
-		return nil, errors.New("unauthorized to cancel this order")
+	if order.UserID != userID {
+		return errors.New("unauthorized")
 	}
-
 	if order.Status != "pending" {
-		return nil, errors.New("only pending orders can be cancelled")
+		return errors.New("order cannot be cancelled")
+	}
+	return s.orderRepo.UpdateOrderStatus(orderID, "cancelled")
+}
+
+func (s *OrderServiceImpl) ConfirmOrder(userID uint, orderID uint) error {
+	order, err := s.orderRepo.GetOrderByID(orderID)
+	if err != nil {
+		return errors.New("Order not found")
+	}
+	if order.UserID != userID {
+		return errors.New("unauthorized")
+	}
+	if order.Status != "shipped" {
+		return errors.New("order is still in shipping")
 	}
 
-	order.Status = "cancelled"
-	order.UpdatedAt = time.Now()
+	return s.orderRepo.UpdateOrderStatus(orderID, "paid")
 
-	return s.orderRepo.UpdateOrder(order)
 }

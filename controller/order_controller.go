@@ -47,7 +47,7 @@ func (oc *OrderController) CreateOrder(c *gin.Context) {
 	})
 }
 
-// GetUserOrder -> untuk mendapatkan semua order
+// GetUserOrder -> untuk mendapatkan semua order (user)
 func (oc *OrderController) GetUserOrders(c *gin.Context) {
 	userID := uint(c.MustGet("user_id").(float64))
 
@@ -92,5 +92,65 @@ func (oc *OrderController) GetOrderByID(c *gin.Context) {
 		Code:    "SUCCESS",
 		Message: "Successfully fetched order",
 		Data:    web.OrderResponseFromModels(order),
+	})
+}
+
+// CancelledOrder -> membatalkan order
+func (oc *OrderController) CancelOrder(c *gin.Context) {
+	orderID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "Invalid Order ID",
+		})
+		return
+	}
+
+	userIDFloat := c.MustGet("user_id").(float64)
+	userID := uint(userIDFloat)
+
+	err = oc.orderService.CancelOrder(userID, uint(orderID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.ApiResponse{
+			Code:    "INTERNAL_ERROR",
+			Message: err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "SUCCESS",
+		Message: "Successfully cancelled order",
+	})
+}
+
+// ConfirmOrder -> konfirm order jika sudah sampai
+func (oc *OrderController) ConfirmOrder(c *gin.Context) {
+	orderID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "Invalid Order ID",
+			Data:    nil,
+		})
+		return
+	}
+
+	userIDFloat := c.MustGet("user_id").(float64)
+	userID := uint(userIDFloat)
+
+	err = oc.orderService.ConfirmOrder(userID, uint(orderID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.ApiResponse{
+			Code:    "INTERNAL_ERROR",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "SUCCESS",
+		Message: "Order Confirmed Successfully",
 	})
 }
