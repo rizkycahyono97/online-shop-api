@@ -51,6 +51,21 @@ func (r OrderRepositoryImpl) GetAllOrders() ([]*domain.Order, error) {
 	return orders, nil
 }
 
+func (r OrderRepositoryImpl) GetAllUserOrders() ([]*domain.Order, error) {
+	var orders []*domain.Order
+	err := r.db.
+		Preload("User").
+		Preload("OrderItems.Product").
+		Preload("Payment").
+		Order("created_at desc").
+		Find(&orders).Error
+
+	if err != nil {
+		return nil, err
+	}
+	return orders, nil
+}
+
 func (r OrderRepositoryImpl) GetOrderByID(orderID, userID uint) (*domain.Order, error) {
 	var order domain.Order
 

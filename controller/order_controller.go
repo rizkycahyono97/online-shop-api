@@ -74,6 +74,24 @@ func (oc *OrderController) GetUserOrders(c *gin.Context) {
 	})
 }
 
+// GetallUserOrder -> untuk mendapatkan semua order (admin)
+func (oc *OrderController) GetAllUserOrders(c *gin.Context) {
+	orders, err := oc.orderService.GetAllUserOrders()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.ApiResponse{
+			Code:    "INTERNAL_ERROR",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "SUCCESS",
+		Message: "Successfully fetched orders",
+		Data:    orders,
+	})
+}
+
 // GetOrderById -> untuk mengambil order berdasarkan id
 func (oc *OrderController) GetOrderByID(c *gin.Context) {
 	orderIDParam := c.Param("id")

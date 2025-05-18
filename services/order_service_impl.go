@@ -104,6 +104,19 @@ func (s OrderServiceImpl) GetAllOrders() ([]*domain.Order, error) {
 	return s.orderRepo.GetAllOrders()
 }
 
+func (s OrderServiceImpl) GetAllUserOrders() ([]*web.OrderResponse, error) {
+	orders, err := s.orderRepo.GetAllUserOrders()
+	if err != nil {
+		return nil, err
+	}
+
+	var response []*web.OrderResponse
+	for _, order := range orders {
+		response = append(response, web.OrderResponseFromModels(order))
+	}
+	return response, nil
+}
+
 func (s *OrderServiceImpl) CancelOrder(userID, orderID uint) error {
 	order, err := s.orderRepo.GetOrderByID(orderID, userID)
 	if err != nil {

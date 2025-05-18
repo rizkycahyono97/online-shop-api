@@ -10,6 +10,7 @@ type OrderService interface {
 	GetOrderByID(orderID, userID uint) (*web.OrderResponse, error)
 	GetOrderByUserID(userID uint) ([]*domain.Order, error)
 	GetAllOrders() ([]*domain.Order, error)
+	GetAllUserOrders() ([]*web.OrderResponse, error)
 	CancelOrder(UserID uint, orderID uint) error
 	ConfirmOrder(userID uint, orderID uint) error
 	UpdateOrderStatus(orderID uint, status string) (*domain.Order, error)

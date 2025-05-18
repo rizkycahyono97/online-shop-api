@@ -45,7 +45,7 @@ func SetupRoutes(
 
 		// order endpoint
 		protected.POST("/orders", orderController.CreateOrder)
-		protected.GET("/orders", orderController.GetUserOrders)
+		protected.GET("/user/orders", orderController.GetUserOrders)
 		protected.GET("/orders/:id", orderController.GetOrderByID)
 		protected.PUT("/orders/:id/cancel", orderController.CancelOrder)
 		protected.PUT("/orders/:id/confirm", orderController.ConfirmOrder)
@@ -68,6 +68,7 @@ func SetupRoutes(
 		adminRoutes.GET("/cart", cartController.GetAllCarts)
 
 		// orders endpoint
+		adminRoutes.GET("/orders", orderController.GetAllUserOrders)
 		adminRoutes.GET("/orders/user/:user_id", orderController.GetOrderByUserID)
 		adminRoutes.PUT("/orders/:id/status", orderController.UpdateOrderStatus)
 	}
