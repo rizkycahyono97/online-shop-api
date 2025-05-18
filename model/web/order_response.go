@@ -46,3 +46,32 @@ func OrderResponseFromModels(order *domain.Order) *OrderResponse {
 		Items:       items,
 	}
 }
+
+// helper for Order Response for Slice
+func OrderResponseListFromModels(orders []*domain.Order) []*OrderResponse {
+	response := make([]*OrderResponse, 0)
+
+	for _, order := range orders {
+		items := make([]OrderItemResponse, 0)
+		for _, item := range order.OrderItems {
+			items = append(items, OrderItemResponse{
+				ProductID: item.ProductID,
+				Name:      item.Product.Name,
+				Quantity:  item.Quantity,
+				Price:     float64(item.Price),
+			})
+		}
+
+		response = append(response, &OrderResponse{
+			ID:          order.ID,
+			UserID:      order.UserID,
+			TotalAmount: order.TotalAmount,
+			Status:      order.Status,
+			Address:     order.Address,
+			CreatedAt:   order.CreatedAt,
+			Items:       items,
+		})
+	}
+
+	return response
+}

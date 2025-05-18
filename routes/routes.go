@@ -68,6 +68,6 @@ func SetupRoutes(
 		adminRoutes.GET("/cart", cartController.GetAllCarts)
 
 		// orders endpoint
-		//adminRoutes.GET("/orders", orderController.GetUserOrders)
+		adminRoutes.GET("/orders/user/:user_id", orderController.GetOrderByUserID)
 	}
 }
