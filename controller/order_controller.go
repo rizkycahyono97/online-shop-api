@@ -205,3 +205,40 @@ func (oc *OrderController) GetOrderByUserID(c *gin.Context) {
 	})
 
 }
+
+// UpdateOrderStatus -> update status order for admin
+func (oc *OrderController) UpdateOrderStatus(c *gin.Context) {
+	var req web.UpdateOrderStatusRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	orderIDParam := c.Param("id")
+	orderIDUint, err := strconv.ParseUint(orderIDParam, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "Invalid order ID",
+		})
+		return
+	}
+
+	updatedOrder, err := oc.orderService.UpdateOrderStatus(uint(orderIDUint), req.Status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.ApiResponse{
+			Code:    "INTERNAL_ERROR",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "SUCCESS",
+		Message: "Successfully updated order",
+		Data:    web.OrderResponseFromModels(updatedOrder),
+	})
+}

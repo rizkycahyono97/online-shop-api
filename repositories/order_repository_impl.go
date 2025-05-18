@@ -68,6 +68,19 @@ func (r OrderRepositoryImpl) GetOrderByID(orderID, userID uint) (*domain.Order, 
 	return &order, nil
 }
 
+func (r OrderRepositoryImpl) GetOrderByIDOnly(orderID uint) (*domain.Order, error) {
+	var order domain.Order
+	err := r.db.
+		Preload("OrderItems.Product").
+		Preload("Payment").
+		First(&order, orderID).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &order, nil
+}
+
 func (r OrderRepositoryImpl) UpdateOrder(order *domain.Order) (*domain.Order, error) {
 	if err := r.db.Save(order).Error; err != nil {
 		return nil, err

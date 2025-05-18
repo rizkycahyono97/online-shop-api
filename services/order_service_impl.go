@@ -131,5 +131,23 @@ func (s *OrderServiceImpl) ConfirmOrder(userID uint, orderID uint) error {
 	}
 
 	return s.orderRepo.UpdateOrderStatus(orderID, "paid")
+}
 
+func (s *OrderServiceImpl) UpdateOrderStatus(orderID uint, status string) (*domain.Order, error) {
+	order, err := s.orderRepo.GetOrderByIDOnly(orderID)
+	if err != nil {
+		return nil, err
+	}
+
+	if order.Status == "cancelled" {
+		return nil, errors.New("cannot update, order is cancelled")
+	}
+
+	order.Status = status
+
+	if _, err := s.orderRepo.UpdateOrder(order); err != nil {
+		return nil, errors.New("failed to update order status")
+	}
+
+	return order, nil
 }

@@ -69,5 +69,6 @@ func SetupRoutes(
 
 		// orders endpoint
 		adminRoutes.GET("/orders/user/:user_id", orderController.GetOrderByUserID)
+		adminRoutes.PUT("/orders/:id/status", orderController.UpdateOrderStatus)
 	}
 }
