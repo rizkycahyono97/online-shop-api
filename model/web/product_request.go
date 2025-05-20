@@ -6,4 +6,5 @@ type ProductRequest struct {
 	Price       float64 `json:"price" binding:"required" validate:"required,gt=0"`
 	Stock       uint    `json:"stock" binding:"required" validate:"required,gte=0"`
 	ImageURL    string  `json:"image_url" binding:"required" validate:"required,url"`
+	CategoryID  uint    `json:"category_id" binding:"required" validate:"required,gte=0"`
 }
