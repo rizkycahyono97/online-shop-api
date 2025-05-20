@@ -47,7 +47,7 @@ func (p PaymentRepositoryImpl) GetAllPayments() ([]*domain.Payment, error) {
 
 func (p PaymentRepositoryImpl) GetPaymentByUserID(userID uint) ([]*domain.Payment, error) {
 	var payments []*domain.Payment
-	err := p.db.Joins("JOIN orders ON orders.id = payments.order_id").
+	err := p.db.Debug().Joins("JOIN orders ON orders.id = payments.order_id").
 		Where("orders.user_id = ?", userID).
 		Order("payments.created_at desc").
 		Find(&payments).Error

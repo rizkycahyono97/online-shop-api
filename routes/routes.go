@@ -53,7 +53,7 @@ func SetupRoutes(
 
 		// payments endpoint
 		protected.PUT("/payments", paymentController.CreatePayment)
-		protected.GET("/payments/:order_id", paymentController.GetPaymentByID)
+		protected.GET("/user/payments/:order_id", paymentController.GetPaymentByID)
 		protected.GET("/user/payments", paymentController.GetPaymentForUser)
 	}
 
@@ -79,7 +79,7 @@ func SetupRoutes(
 		adminRoutes.PUT("/orders/:id/status", orderController.UpdateOrderStatus)
 
 		// payment endpoint
-		//adminRoutes.PUT("/payments/:order_id/status", paymentController.UpdatePaymentStatus)
 		adminRoutes.GET("/payments", paymentController.GetAllPayment)
+		adminRoutes.GET("/payments/:user_id", paymentController.GetPaymentsByUserID)
 	}
 }

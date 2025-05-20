@@ -169,3 +169,32 @@ func (pc *PaymentController) GetAllPayment(c *gin.Context) {
 		Data:    web.PaymentResponseFromModels(payments),
 	})
 }
+
+// GET /api/v1/payments/:user_id
+func (pc *PaymentController) GetPaymentsByUserID(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "invalid user ID",
+		})
+		return
+	}
+
+	payments, err := pc.paymentService.GetPaymentsForUser(uint(userID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.ApiResponse{
+			Code:    "INTERNAL_ERROR",
+			Message: err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "SUCCESS",
+		Message: "Payments found",
+		Data:    web.PaymentResponseFromModels(payments),
+	})
+}
