@@ -90,7 +90,7 @@ func (pc *PaymentController) UpdatePaymentStatus(c *gin.Context) {
 	})
 }
 
-// GET /api/v1/payments/:iyd
+// GET /api/v1/payments/:id
 func (pc *PaymentController) GetPaymentByID(c *gin.Context) {
 	paymentIDStr := c.Param("order_id")
 	paymentID, err := strconv.Atoi(paymentIDStr)
