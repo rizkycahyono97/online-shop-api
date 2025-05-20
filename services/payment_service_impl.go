@@ -81,7 +81,7 @@ func (p PaymentServiceImpl) CreatePayment(userID uint, payment *domain.Payment) 
 	if err != nil {
 		return nil, errors.New("payment created, but failed to update order status")
 	}
-	
+
 	return createPayment, nil
 }
 
@@ -103,6 +103,6 @@ func (p PaymentServiceImpl) GetAllPayment() ([]*domain.Payment, error) {
 	return p.paymentRepo.GetAllPayments()
 }
 
-func (p PaymentServiceImpl) GetPaymentByUserID(userID uint) ([]*domain.Payment, error) {
+func (p PaymentServiceImpl) GetPaymentsForUser(userID uint) ([]*domain.Payment, error) {
 	return p.paymentRepo.GetPaymentByUserID(userID)
 }

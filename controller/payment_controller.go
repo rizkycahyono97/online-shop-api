@@ -121,7 +121,7 @@ func (pc *PaymentController) GetPaymentByID(c *gin.Context) {
 }
 
 // GET /api/v1/users/payments
-func (pc *PaymentController) GetPaymentByUserID(c *gin.Context) {
+func (pc *PaymentController) GetPaymentForUser(c *gin.Context) {
 	userIDFloat, exists := c.Get("user_id")
 	if !exists {
 		c.JSON(http.StatusBadRequest, web.ApiResponse{
@@ -134,7 +134,7 @@ func (pc *PaymentController) GetPaymentByUserID(c *gin.Context) {
 
 	userID := uint(userIDFloat.(float64))
 
-	payments, err := pc.paymentService.GetPaymentByUserID(userID)
+	payments, err := pc.paymentService.GetPaymentsForUser(userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, web.ApiResponse{
 			Code:    "INTERNAL_ERROR",
