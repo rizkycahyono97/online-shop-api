@@ -13,7 +13,8 @@ func SetupRoutes(
 	userController *controller.UserController,
 	productController *controller.ProductController,
 	cartController *controller.CartController,
-	orderController *controller.OrderController) {
+	orderController *controller.OrderController,
+	paymentController *controller.PaymentController) {
 
 	// public routes
 	public := r.Group("/api/v1")
@@ -49,6 +50,11 @@ func SetupRoutes(
 		protected.GET("/orders/:id", orderController.GetOrderByID)
 		protected.PUT("/orders/:id/cancel", orderController.CancelOrder)
 		protected.PUT("/orders/:id/confirm", orderController.ConfirmOrder)
+
+		// payments endpoint
+		protected.PUT("/payments", paymentController.CreatePayment)
+		protected.GET("/payments/:id", paymentController.GetPaymentByID)
+		protected.GET("/user/payments", paymentController.GetPaymentByUserID)
 	}
 
 	// admins routes
@@ -71,5 +77,9 @@ func SetupRoutes(
 		adminRoutes.GET("/orders", orderController.GetAllUserOrders)
 		adminRoutes.GET("/orders/user/:user_id", orderController.GetOrderByUserID)
 		adminRoutes.PUT("/orders/:id/status", orderController.UpdateOrderStatus)
+
+		// payment endpoint
+		adminRoutes.PUT("/payments/:id/status", paymentController.UpdatePaymentStatus)
+		adminRoutes.GET("/payments", paymentController.GetAllPayment)
 	}
 }

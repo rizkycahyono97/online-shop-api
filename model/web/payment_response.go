@@ -17,13 +17,11 @@ type PaymentResponse struct {
 
 func PaymentResponseFromModel(payment *domain.Payment) *PaymentResponse {
 	return &PaymentResponse{
-		ID:        payment.ID,
-		OrderID:   payment.OrderID,
-		Method:    payment.Method,
-		Amount:    payment.Amount,
-		Status:    payment.Status,
-		CreatedAt: payment.CreatedAt,
-		UpdatedAt: payment.UpdatedAt,
+		ID:      payment.ID,
+		OrderID: payment.OrderID,
+		Method:  payment.Method,
+		Amount:  payment.Amount,
+		Status:  payment.Status,
 	}
 }
 

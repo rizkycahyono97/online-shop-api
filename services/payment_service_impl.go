@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/rizkycahyono97/online-shop-api/model/domain"
 	"github.com/rizkycahyono97/online-shop-api/repositories"
+	"time"
 )
 
 type PaymentServiceImpl struct {
@@ -18,22 +19,70 @@ func NewPaymentService(paymentRepo repositories.PaymentRepository, orderRepo rep
 	}
 }
 
-func (p PaymentServiceImpl) CreatePayment(payment *domain.Payment) (*domain.Payment, error) {
-	order, err := p.orderRepo.GetOrderByID(payment.OrderID, payment.OrderID)
+func (p PaymentServiceImpl) CreatePayment(userID uint, payment *domain.Payment) (*domain.Payment, error) {
+	// validsi order milik user
+	order, err := p.orderRepo.GetOrderByID(payment.OrderID, userID)
 	if err != nil {
 		return nil, errors.New("order not found")
 	}
 
-	// pastika tidak ada payment sebelumnya
-	existingPayment, _ := p.orderRepo.GetOrderByID(payment.OrderID, payment.OrderID)
+	// cek status order
+	switch order.Status {
+	case "cancelled":
+		return nil, errors.New("order is cancelled")
+	case "shipped":
+		if payment.Method != "cod" {
+			return nil, errors.New("payment method is invalid")
+		}
+	case "pending":
+	default:
+		return nil, errors.New("order status is invalid")
+	}
+
+	// Cek apakah sudah ada payment sebelumnya
+	existingPayment, _ := p.paymentRepo.GetByOrderID(payment.OrderID)
 	if existingPayment != nil {
-		return nil, errors.New("order already exists")
+		return nil, errors.New("payment for this order already exists")
+	}
+
+	// Validasi berdasarkan metode pembayaran
+	switch payment.Method {
+	case "va":
+		if payment.Amount != order.TotalAmount {
+			return nil, errors.New("amount must match total order amount for virtual account payments")
+		}
+	case "cod":
+		// Tidak perlu ada amount dari request, langsung diset ke 0
+		payment.Amount = 0
+	case "credit", "paylater":
+		minAmount := order.TotalAmount / 3
+		if payment.Amount < minAmount {
+			return nil, errors.New("amount must be greater than or equal to minimum amount of payment")
+		}
+	default:
+		return nil, errors.New("payment method is invalid")
 	}
 
 	// pastikan amount sesuai order
 	payment.Amount = order.TotalAmount
+	payment.UserID = userID
+	payment.IsPaid = true
+	payment.Status = "paid"
 
-	return p.paymentRepo.CreatePayment(payment)
+	createPayment, err := p.paymentRepo.CreatePayment(payment)
+	if err != nil {
+		return nil, err
+	}
+
+	//Update order status jika pembayaran berhasil
+	order.Status = "paid"
+	order.UpdatedAt = time.Now()
+	_, err = p.orderRepo.UpdateOrder(order)
+	if err != nil {
+		return nil, errors.New("payment created, but failed to update order status")
+	}
+	
+	return createPayment, nil
 }
 
 func (p PaymentServiceImpl) UpdatePaymentStatus(orderID uint, status string) (*domain.Payment, error) {

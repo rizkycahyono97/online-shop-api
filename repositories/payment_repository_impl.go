@@ -14,7 +14,7 @@ func NewPaymentRepository(db *gorm.DB) PaymentRepository {
 }
 
 func (p PaymentRepositoryImpl) CreatePayment(payment *domain.Payment) (*domain.Payment, error) {
-	if err := p.db.Create(payment).Error; err != nil {
+	if err := p.db.Debug().Create(payment).Error; err != nil {
 		return nil, err
 	}
 	return payment, nil

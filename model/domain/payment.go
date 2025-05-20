@@ -1,15 +1,13 @@
 package domain
 
-import "time"
-
 type Payment struct {
-	ID        uint `gorm:"primaryKey"`
-	OrderID   uint `gorm:"not null;uniqueIndex"`
-	Method    string
-	Amount    float64
-	Status    string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID      uint    `gorm:"primaryKey"`
+	OrderID uint    `gorm:"not null;uniqueIndex"`
+	UserID  uint    `json:"user_id"`
+	Method  string  `json:"payment_method" gorm:"column:payment_method"`
+	Amount  float64 `json:"amount" gorm:"column:amount"`
+	Status  string  `json:"status" gorm:"column:orders_status"`
+	IsPaid  bool    `json:"is_paid" gorm:"column:is_paid;default:false"`
 }
 
 func (Payment) TableName() string {

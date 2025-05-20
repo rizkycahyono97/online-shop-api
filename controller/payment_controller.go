@@ -1,8 +1,8 @@
 package controller
 
+import "C"
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rizkycahyono97/online-shop-api/model/domain"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/services"
 	"net/http"
@@ -21,30 +21,32 @@ func NewPaymentController(paymentService services.PaymentService) *PaymentContro
 
 // CreatePayment (Customer)
 func (pc *PaymentController) CreatePayment(c *gin.Context) {
-	var payment domain.Payment
-	if err := c.ShouldBindJSON(&payment); err != nil {
+	userID := uint(c.MustGet("user_id").(float64))
+
+	var req web.PaymentCreateRequest
+	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
+			Code:    "FAIL",
 			Message: err.Error(),
-			Data:    nil,
 		})
 		return
 	}
 
-	created, err := pc.paymentService.CreatePayment(&payment)
+	payment := web.PaymentRequestToModel(req)
+
+	created, err := pc.paymentService.CreatePayment(userID, payment)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
+			Code:    "FAIL",
 			Message: err.Error(),
-			Data:    nil,
 		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, web.ApiResponse{
+	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "SUCCESS",
 		Message: "Payment created",
-		Data:    web.PaymentResponseFromModel(created),
+		Data:    created,
 	})
 }
 
@@ -88,6 +90,7 @@ func (pc *PaymentController) UpdatePaymentStatus(c *gin.Context) {
 	})
 }
 
+// GET /api/v1/payments/:iyd
 func (pc *PaymentController) GetPaymentByID(c *gin.Context) {
 	paymentIDStr := c.Param("order_id")
 	paymentID, err := strconv.Atoi(paymentIDStr)
@@ -117,6 +120,7 @@ func (pc *PaymentController) GetPaymentByID(c *gin.Context) {
 	})
 }
 
+// GET /api/v1/users/payments
 func (pc *PaymentController) GetPaymentByUserID(c *gin.Context) {
 	userIDFloat, exists := c.Get("user_id")
 	if !exists {
@@ -147,6 +151,7 @@ func (pc *PaymentController) GetPaymentByUserID(c *gin.Context) {
 	})
 }
 
+// GET /api/v1/payments (admin only)
 func (pc *PaymentController) GetAllPayment(c *gin.Context) {
 	payments, err := pc.paymentService.GetAllPayment()
 	if err != nil {
