@@ -11,6 +11,9 @@ type Product struct {
 	ImageURL    string    `json:"image_url" gorm:"column:image_url;type:VARCHAR(255);"`
 	CreatedAt   time.Time `json:"created_at" gorm:"type:DATETIME;column:created_at; autoCreateTime"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"type:DATETIME;column:updated_at; autoUpdateTime"`
+
+	CategoryID uint
+	Category   Category `gorm:"foreignKey:CategoryID"`
 }
 
 // nama table
