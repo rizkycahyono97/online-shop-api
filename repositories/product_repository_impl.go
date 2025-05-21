@@ -54,3 +54,21 @@ func (repo ProductRepositoryImpl) DeleteProduct(id uint) error {
 	}
 	return nil
 }
+
+func (repo ProductRepositoryImpl) SearchProductByKeyword(keyword string) ([]*domain.Product, error) {
+	var products []*domain.Product
+
+	// LIKE untuk nama produk atau deskripsi
+	// JOIN ke categories agar bisa mencari berdasarkan category_name juga
+	err := repo.db.
+		Joins("JOIN categories ON categories.id = products.category_id").
+		Where("products.name LIKE ? OR products.description LIKE ? OR categories.category_name LIKE ?, \"%\"+keyword+\"%\", \"%\"+keyword+\"%\", \"%\"+keyword+\"%\")").
+		Order("products.created_at desc").
+		Find(&products).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
+}
