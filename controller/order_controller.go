@@ -5,7 +5,6 @@ import (
 	"github.com/rizkycahyono97/online-shop-api/helpers"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/services"
-	"net/http"
 	"strconv"
 )
 
@@ -23,29 +22,17 @@ func (oc *OrderController) CreateOrder(c *gin.Context) {
 
 	var req web.CreateOrderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid Request",
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid Request", nil)
 		return
 	}
 
 	order, err := oc.orderService.CreateOrder(userID, &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Order Created Successfully",
-		Data:    web.OrderResponseFromModels(order),
-	})
+	helpers.JSONSuccessResponse(c, "Order Created Successfully", web.OrderResponseFromModels(order))
 }
 
 // GetUserOrder -> untuk mendapatkan semua order (user)
@@ -54,11 +41,7 @@ func (oc *OrderController) GetUserOrders(c *gin.Context) {
 
 	orders, err := oc.orderService.GetOrderByUserID(userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
-			Message: "Failed to fetch orders",
-			Data:    nil,
-		})
+		helpers.JSONInternalErrorResponse(c, "Failed to fetch orders", nil)
 		return
 	}
 
@@ -67,29 +50,18 @@ func (oc *OrderController) GetUserOrders(c *gin.Context) {
 		response = append(response, *web.OrderResponseFromModels(order))
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Successfully fetched orders",
-		Data:    response,
-	})
+	helpers.JSONSuccessResponse(c, "Successfully fetched orders", response)
 }
 
 // GetallUserOrder -> untuk mendapatkan semua order (admin)
 func (oc *OrderController) GetAllUserOrders(c *gin.Context) {
 	orders, err := oc.orderService.GetAllUserOrders()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
-			Message: err.Error(),
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Successfully fetched orders",
-		Data:    orders,
-	})
+	helpers.JSONSuccessResponse(c, "Successfully fetched orders", orders)
 }
 
 // GetOrderById -> untuk mengambil order berdasarkan id
@@ -97,10 +69,7 @@ func (oc *OrderController) GetOrderByID(c *gin.Context) {
 	orderIDParam := c.Param("id")
 	orderIDUint, err := strconv.ParseUint(orderIDParam, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid order ID",
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid order ID", nil)
 		return
 	}
 
@@ -110,28 +79,18 @@ func (oc *OrderController) GetOrderByID(c *gin.Context) {
 
 	order, err := oc.orderService.GetOrderByID(uint(orderIDUint), userID)
 	if err != nil {
-		c.JSON(http.StatusForbidden, web.ApiResponse{
-			Code:    "FORBIDDEN",
-			Message: "You are not allowed to access this order",
-		})
+		helpers.JSONInternalErrorResponse(c, "You are not allowed to access this order", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Order fetched successfully",
-		Data:    order,
-	})
+	helpers.JSONSuccessResponse(c, "Order fetched successfully", order)
 }
 
 // CancelledOrder -> membatalkan order
 func (oc *OrderController) CancelOrder(c *gin.Context) {
 	orderID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid Order ID",
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid order ID", nil)
 		return
 	}
 
@@ -140,29 +99,18 @@ func (oc *OrderController) CancelOrder(c *gin.Context) {
 
 	err = oc.orderService.CancelOrder(userID, uint(orderID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Successfully cancelled order",
-	})
+	helpers.JSONSuccessResponse(c, "Successfully cancelled order", nil)
 }
 
 // ConfirmOrder -> konfirm order jika sudah sampai
 func (oc *OrderController) ConfirmOrder(c *gin.Context) {
 	orderID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid Order ID",
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid order ID", nil)
 		return
 	}
 
@@ -171,17 +119,11 @@ func (oc *OrderController) ConfirmOrder(c *gin.Context) {
 
 	err = oc.orderService.ConfirmOrder(userID, uint(orderID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
-			Message: err.Error(),
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Order Confirmed Successfully",
-	})
+	helpers.JSONSuccessResponse(c, "Successfully confirmed order", nil)
 }
 
 // GetOrderByUserID -> mendapatkan order berdsarkan userID khusus untuk admin
@@ -189,74 +131,46 @@ func (oc *OrderController) GetOrderByUserID(c *gin.Context) {
 	userIDParam := c.Param("user_id")
 	userIDUint, err := strconv.Atoi(userIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid user ID",
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid order ID", nil)
 		return
 	}
 
 	targetUserID := uint(userIDUint)
 
 	if !helpers.IsOwnerOrAdmin(c, targetUserID) {
-		c.JSON(http.StatusForbidden, web.ApiResponse{
-			Code:    "FORBIDDEN",
-			Message: "You are not allowed to access this order",
-		})
+		helpers.JSONBadRequestResponse(c, "You are not allowed to access this order", nil)
 		return
 	}
 
 	orders, err := oc.orderService.GetOrderByUserID(targetUserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Successfully fetched orders",
-		Data:    web.OrderResponseListFromModels(orders),
-	})
-
+	helpers.JSONSuccessResponse(c, "Successfully fetched orders", web.OrderResponseListFromModels(orders))
 }
 
 // UpdateOrderStatus -> update status order for admin
 func (oc *OrderController) UpdateOrderStatus(c *gin.Context) {
 	var req web.UpdateOrderStatusRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: err.Error(),
-		})
+		helpers.JSONBadRequestResponse(c, "", err)
 		return
 	}
 
 	orderIDParam := c.Param("id")
 	orderIDUint, err := strconv.ParseUint(orderIDParam, 10, 32)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid order ID",
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid order ID", nil)
 		return
 	}
 
 	updatedOrder, err := oc.orderService.UpdateOrderStatus(uint(orderIDUint), req.Status)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_ERROR",
-			Message: err.Error(),
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Successfully updated order",
-		Data:    web.OrderResponseFromModels(updatedOrder),
-	})
+	helpers.JSONSuccessResponse(c, "Successfully updated order", web.OrderResponseFromModels(updatedOrder))
 }

@@ -34,6 +34,20 @@ func JSONBadRequestResponse(c *gin.Context, message string, err error) {
 	})
 }
 
+func JSONForbiddenResponse(c *gin.Context, message string, err error) {
+	if message == "" && err != nil {
+		message = err.Error()
+	} else if message == "" && err == nil {
+		message = "Forbidden"
+	}
+
+	c.JSON(http.StatusForbidden, web.ApiResponse{
+		Code:    "FORBIDDEN",
+		Message: message,
+		Data:    nil,
+	})
+}
+
 func JSONSuccessResponse(c *gin.Context, message string, data interface{}) {
 	c.JSON(http.StatusOK, web.ApiResponse{
 		Code:    "SUCCESS",
