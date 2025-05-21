@@ -1,10 +1,12 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/rizkycahyono97/online-shop-api/config"
 	"github.com/rizkycahyono97/online-shop-api/controller"
+	"github.com/rizkycahyono97/online-shop-api/middleware"
 	"github.com/rizkycahyono97/online-shop-api/repositories"
 	"github.com/rizkycahyono97/online-shop-api/routes"
 	"github.com/rizkycahyono97/online-shop-api/services"
@@ -18,6 +20,7 @@ func main() {
 		log.Println("Error loading .env file")
 	}
 
+	// initialize database
 	config.InitDB()
 
 	// main inject
@@ -58,9 +61,29 @@ func main() {
 	categoryService := services.NewCategoryService(categoryRepo)
 	categoryController := controller.NewCategoryController(categoryService)
 
+	// initialize route
 	r := gin.Default()
 
-	routes.SetupRoutes(r, mainController, authController, userController, productController, cartController, orderController, paymentController, categoryController)
+	// Apply the CORS middleware to the router.
+	r.Use(cors.New(middleware.SetupCors()))
 
-	r.Run("localhost:8080")
+	// router
+	routes.SetupRoutes(
+		r,
+		mainController,
+		authController,
+		userController,
+		productController,
+		cartController,
+		orderController,
+		paymentController,
+		categoryController)
+
+	// Retrieve the application port from environment variables with a default value of "8080".
+	appPort := config.GetEnv("APP_PORT", "8080")
+
+	// run application
+	if err := r.Run(":" + appPort); err != nil {
+		log.Fatalf("Failed to run the server: %v", err)
+	}
 }

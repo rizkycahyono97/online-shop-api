@@ -5,6 +5,7 @@ import (
 	"github.com/rizkycahyono97/online-shop-api/helpers"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/services"
+	"net/http"
 )
 
 type AuthController struct {
@@ -48,5 +49,9 @@ func (ac *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	helpers.JSONSuccessResponse(c, "Login Successfully", token)
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "SUCCESS",
+		Message: "Login Successfully",
+		Token:   token,
+	})
 }

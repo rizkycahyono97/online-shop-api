@@ -45,7 +45,7 @@ func (cc *CartController) AddItem(c *gin.Context) {
 
 	var req web.AddItemToCartRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		helpers.JSONBadRequestResponse(c, "Invalid Request")
+		helpers.JSONBadRequestResponse(c, "Invalid Request", nil)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (cc *CartController) RemoveItemFromCart(c *gin.Context) {
 	productIDParam := c.Param("product_id")
 	productIDUint, err := strconv.Atoi(productIDParam)
 	if err != nil {
-		helpers.JSONBadRequestResponse(c, "Invalid Product ID")
+		helpers.JSONBadRequestResponse(c, "Invalid Product ID", nil)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (cc *CartController) RemoveItemFromCart(c *gin.Context) {
 	var req web.RemoveItemFromCartRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		helpers.JSONBadRequestResponse(c, "Invalid Request or missing quantity")
+		helpers.JSONBadRequestResponse(c, "Invalid Request or missing quantity", nil)
 		return
 	}
 
