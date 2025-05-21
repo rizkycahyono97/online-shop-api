@@ -164,3 +164,32 @@ func (p *ProductController) DeleteProduct(c *gin.Context) {
 		Data:    nil,
 	})
 }
+
+// SearchProductByKeyword
+func (p *ProductController) SearchProducts(c *gin.Context) {
+	keyword := c.Query("keyword")
+	if keyword == "" {
+		c.JSON(http.StatusBadRequest, web.ApiResponse{
+			Code:    "BAD_REQUEST",
+			Message: "Invalid Search Keyword",
+			Data:    nil,
+		})
+		return
+	}
+
+	products, err := p.productService.SearchProduct(keyword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.ApiResponse{
+			Code:    "INTERNAL_ERROR",
+			Message: err.Error(),
+			Data:    nil,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, web.ApiResponse{
+		Code:    "OK",
+		Message: "Products Search Successfully",
+		Data:    web.ProductResponseListFromModel(products),
+	})
+}
