@@ -53,9 +53,14 @@ func main() {
 	paymentService := services.NewPaymentService(paymentRepo, orderRepo)
 	paymentController := controller.NewPaymentController(paymentService)
 
+	// category inject
+	categoryRepo := repositories.NewCategoryRepository(config.DB)
+	categoryService := services.NewCategoryService(categoryRepo)
+	categoryController := controller.NewCategoryController(categoryService)
+
 	r := gin.Default()
 
-	routes.SetupRoutes(r, mainController, authController, userController, productController, cartController, orderController, paymentController)
+	routes.SetupRoutes(r, mainController, authController, userController, productController, cartController, orderController, paymentController, categoryController)
 
 	r.Run("localhost:8080")
 }

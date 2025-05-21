@@ -14,7 +14,8 @@ func SetupRoutes(
 	productController *controller.ProductController,
 	cartController *controller.CartController,
 	orderController *controller.OrderController,
-	paymentController *controller.PaymentController) {
+	paymentController *controller.PaymentController,
+	categoryController *controller.CategoryController) {
 
 	// public routes
 	public := r.Group("/api/v1")
@@ -81,5 +82,8 @@ func SetupRoutes(
 		// payment endpoint
 		adminRoutes.GET("/payments", paymentController.GetAllPayment)
 		adminRoutes.GET("/payments/:user_id", paymentController.GetPaymentsByUserID)
+
+		// category endpoint
+		adminRoutes.POST("/category", categoryController.CreateCategory)
 	}
 }
