@@ -32,6 +32,7 @@ func (s ProductServiceImpl) CreateProduct(req *web.ProductRequest) (*domain.Prod
 		Price:       req.Price,
 		Stock:       req.Stock,
 		ImageURL:    req.ImageURL,
+		CategoryID:  req.CategoryID,
 	}
 
 	return s.repo.CreateProduct(product)
