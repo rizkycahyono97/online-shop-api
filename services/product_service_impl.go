@@ -6,6 +6,7 @@ import (
 	"github.com/rizkycahyono97/online-shop-api/model/domain"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/repositories"
+	"strings"
 )
 
 type ProductServiceImpl struct {
@@ -74,4 +75,23 @@ func (s ProductServiceImpl) DeleteProduct(id uint) error {
 	}
 
 	return s.repo.DeleteProduct(id)
+}
+
+func (s ProductServiceImpl) SearchProduct(keyword string) ([]*domain.Product, error) {
+	// Basic sanitasi input untuk menghindari SQL Injection (meskipun GORM aman secara default)
+	safeKeyword := strings.TrimSpace(keyword)
+
+	if len(safeKeyword) == 0 {
+		return nil, errors.New("Empty keyword")
+	}
+
+	// Validasi tambahan: cegah karakter aneh yang umum digunakan untuk SQLi
+	blacklist := []string{";", "--", "/*", "*/", "'"}
+	for _, b := range blacklist {
+		if strings.Contains(safeKeyword, b) {
+			return nil, errors.New("Invalid Keyword")
+		}
+	}
+
+	return s.repo.SearchProductByKeyword(safeKeyword)
 }

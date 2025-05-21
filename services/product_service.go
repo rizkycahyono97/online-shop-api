@@ -11,4 +11,5 @@ type ProductService interface {
 	GetAllProducts() ([]*domain.Product, error)
 	UpdateProduct(id uint, req *web.ProductRequest) (*domain.Product, error)
 	DeleteProduct(id uint) error
+	SearchProduct(keyword string) ([]*domain.Product, error)
 }
