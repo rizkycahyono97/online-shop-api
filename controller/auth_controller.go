@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rizkycahyono97/online-shop-api/helpers"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/services"
-	"net/http"
 )
 
 type AuthController struct {
@@ -20,29 +20,17 @@ func (ac *AuthController) Register(c *gin.Context) {
 	var input web.UserRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "", err)
 		return
 	}
 
 	user, err := ac.authService.Register(&input)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "SERVER_ERROR",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, web.ApiResponse{
-		Code:    "created",
-		Message: "User Registered Successfully",
-		Data:    web.UserResponseFromModel(user),
-	})
+	helpers.JSONSuccessResponse(c, "User Registered Successfully", web.UserResponseFromModel(user))
 }
 
 // Login Handler
@@ -50,27 +38,15 @@ func (ac *AuthController) Login(c *gin.Context) {
 	var input web.UserRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "", err)
 		return
 	}
 
 	token, err := ac.authService.Login(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "SERVER_ERROR",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "Login Successfully",
-		Token:   token,
-	})
+	helpers.JSONSuccessResponse(c, "Login Successfully", token)
 }
