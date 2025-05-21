@@ -138,7 +138,7 @@ func (oc *OrderController) GetOrderByUserID(c *gin.Context) {
 	targetUserID := uint(userIDUint)
 
 	if !helpers.IsOwnerOrAdmin(c, targetUserID) {
-		helpers.JSONBadRequestResponse(c, "You are not allowed to access this order", nil)
+		helpers.JSONForbiddenResponse(c, "You are not allowed to access this order", nil)
 		return
 	}
 

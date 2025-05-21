@@ -5,7 +5,6 @@ import (
 	"github.com/rizkycahyono97/online-shop-api/helpers"
 	"github.com/rizkycahyono97/online-shop-api/model/web"
 	"github.com/rizkycahyono97/online-shop-api/services"
-	"net/http"
 	"strconv"
 )
 
@@ -23,39 +22,23 @@ func (u *UserController) GetProfile(c *gin.Context) {
 
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid User ID",
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid User ID", nil)
 		return
 	}
 
 	//reusable with helper
 	if !helpers.IsOwnerOrAdmin(c, uint(id)) {
-		c.JSON(http.StatusForbidden, web.ApiResponse{
-			Code:    "FORBIDDEN",
-			Message: "You are not allowed to update this user",
-			Data:    nil,
-		})
+		helpers.JSONForbiddenResponse(c, "You are not allowed to update this user", nil)
 		return
 	}
 
 	user, err := u.userService.GetProfile(uint(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, web.ApiResponse{
-			Code:    "NOT_FOUND",
-			Message: "User not Found",
-			Data:    nil,
-		})
+		helpers.JSONNotFoundResponse(c, "User not found", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "OK",
-		Message: "User Found",
-		Data:    web.UserResponseFromModel(user),
-	})
+	helpers.JSONSuccessResponse(c, "User Found", web.UserResponseFromModel(user))
 }
 
 // Get all profiles
@@ -63,39 +46,24 @@ func (u *UserController) GetAllProfiles(c *gin.Context) {
 	//ambil role dari JWT
 	userRole, exist := c.Get("user_role")
 	if !exist {
-		c.JSON(http.StatusUnauthorized, web.ApiResponse{
-			Code:    "UNAUTHORIZED",
-			Message: "Unauthorized",
-		})
+		helpers.JSONForbiddenResponse(c, "Unauthorized", nil)
 		return
 	}
 
 	role, ok := userRole.(string)
 	if !ok || role != "admin" {
-		c.JSON(http.StatusUnauthorized, web.ApiResponse{
-			Code:    "UNAUTHORIZED",
-			Message: "You are not allowed to access this resource",
-			Data:    nil,
-		})
+		helpers.JSONForbiddenResponse(c, "You are not allowed to access this resource", nil)
 		return
 	}
 
 	// Jika admin, lanjut ambil data semua user
 	users, err := u.userService.GetAllProfiles()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "SERVER_ERROR",
-			Message: "Failed to get users",
-			Data:    nil,
-		})
+		helpers.JSONInternalErrorResponse(c, "Failed to get users", nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "OK",
-		Message: "All Users Fetched Successfully",
-		Data:    users,
-	})
+	helpers.JSONSuccessResponse(c, "All Users Fetched Successfully", users)
 }
 
 // Update Profile
@@ -103,48 +71,28 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid User ID",
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid User ID", nil)
 		return
 	}
 
 	//reusable with helper
 	if !helpers.IsOwnerOrAdmin(c, uint(id)) {
-		c.JSON(http.StatusForbidden, web.ApiResponse{
-			Code:    "FORBIDDEN",
-			Message: "You are not allowed to update this user",
-			Data:    nil,
-		})
+		helpers.JSONForbiddenResponse(c, "You are not allowed to update this user", nil)
 		return
 	}
 
 	var req web.UserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "", err)
 	}
 
 	// Use the service layer to update the user
 	user, err := u.userService.UpdateProfile(uint(id), &req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "INTERNAL_SERVER_ERROR",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "User Profile Updated Successfully",
-		Data:    web.UserResponseFromModel(user),
-	})
+	helpers.JSONSuccessResponse(c, "User Profile Updated Successfully", web.UserResponseFromModel(user))
 }
 
 // Delete Profile
@@ -152,37 +100,21 @@ func (u *UserController) DeleteProfile(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, web.ApiResponse{
-			Code:    "BAD_REQUEST",
-			Message: "Invalid User ID",
-			Data:    nil,
-		})
+		helpers.JSONBadRequestResponse(c, "Invalid User ID", nil)
 		return
 	}
 
 	// reusable, menggunakan helpers
 	if !helpers.IsOwnerOrAdmin(c, uint(id)) {
-		c.JSON(http.StatusForbidden, web.ApiResponse{
-			Code:    "FORBIDDEN",
-			Message: "You are not allowed to delete this user",
-			Data:    nil,
-		})
+		helpers.JSONForbiddenResponse(c, "You are not allowed to update this user", nil)
 		return
 	}
 
 	err = u.userService.DeleteProfile(uint(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, web.ApiResponse{
-			Code:    "SERVER_ERROR",
-			Message: err.Error(),
-			Data:    nil,
-		})
+		helpers.JSONInternalErrorResponse(c, "", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, web.ApiResponse{
-		Code:    "SUCCESS",
-		Message: "User Profile Deleted Successfully",
-		Data:    nil,
-	})
+	helpers.JSONSuccessResponse(c, "User Profile Deleted Successfully", nil)
 }
