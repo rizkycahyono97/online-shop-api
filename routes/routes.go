@@ -26,6 +26,9 @@ func SetupRoutes(
 		// auth endpoint
 		public.POST("/register", authController.Register)
 		public.POST("/login", authController.Login)
+
+		// search endpoint
+		public.GET("/products/search", productController.SearchProducts)
 	}
 
 	// protected routes

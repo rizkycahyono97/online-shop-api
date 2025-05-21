@@ -60,10 +60,11 @@ func (repo ProductRepositoryImpl) SearchProductByKeyword(keyword string) ([]*dom
 
 	// LIKE untuk nama produk atau deskripsi
 	// JOIN ke categories agar bisa mencari berdasarkan category_name juga
-	err := repo.db.
+	err := repo.db.Preload("Category").
 		Joins("JOIN categories ON categories.id = products.category_id").
-		Where("products.name LIKE ? OR products.description LIKE ? OR categories.category_name LIKE ?, \"%\"+keyword+\"%\", \"%\"+keyword+\"%\", \"%\"+keyword+\"%\")").
-		Order("products.created_at desc").
+		Where("products.name LIKE ? OR products.description LIKE ? OR categories.category_name LIKE ?",
+			"%"+keyword+"%", "%"+keyword+"%", "%"+keyword+"%").
+		Order("products.created_at DESC").
 		Find(&products).Error
 
 	if err != nil {
