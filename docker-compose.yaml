@@ -6,4 +6,63 @@ services:
     env_file:
       - .env
     environment:
-      -
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+#    ports:
+#      - HOST_MARIADB_PORT=${HOST_MARIADB_PORT}
+    volumes:
+      - mariadb-online-shop-data:/var/lib/mysql
+    networks:
+      - online-shop-network
+
+  phpmyadmin-online-shop:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin-online-shop
+    restart: no
+    env_file:
+      - .env
+    environment:
+      - PMA_HOST=mariadb-online-shop
+      - PMA_PORT=${CONT_MARIADB_PORT}
+    ports:
+      - "${HOST_PHPMYADMIN_PORT}:${CONT_PHPMYADMIN_PORT}"
+    depends_on:
+      - mariadb-online-shop
+    networks:
+      - online-shop-network
+
+  api-online-shop:
+    build: .
+    image: api-online-shop:1.0.0
+    container_name: api-online-shop
+    restart: no
+    depends_on:
+      - mariadb-online-shop
+    env_file:
+      - .env
+    ports:
+      - "${HOST_API_PORT}:${CONT_API_PORT}"
+    environment:
+      - APP_PORT=${CONT_API_PORT}
+      - APP_TIMEZONE=Asia/Jakarta
+      - DB_HOST=mariadb-online-shop
+      - DB_PORT=${CONT_MARIADB_PORT}
+      - DB_USER=${MARIADB_USER}
+      - DB_PASSWORD=${MARIADB_PASSWORD}
+      - DB_NAME=${MARIADB_DATABASE}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+      - CORS_ALLOWED_METHODS=${CORS_ALLOWED_METHODS}
+      - CORS_ALLOWED_HEADERS=${CORS_ALLOWED_HEADERS}
+      - CORS_ALLOW_CREDENTIALS=${CORS_ALLOW_CREDENTIALS}
+      - CORS_EXPOSE_HEADERS=${CORS_EXPOSE_HEADERS}
+    networks:
+      - online-shop-network
+
+volumes:
+  mariadb-online-shop-data:
+
+networks:
+  online-shop-network:
+    driver: bridge

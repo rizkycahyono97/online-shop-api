@@ -1,0 +1,1 @@
+ALTER TABLE payments ADD COLUMN is_paid BOOLEAN NOT NULL DEFAULT 0 AFTER orders_status;

@@ -1,0 +1,1 @@
+ALTER TABLE carts MODIFY user_id INT NOT NULL;

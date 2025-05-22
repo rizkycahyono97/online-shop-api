@@ -9,8 +9,6 @@ package config
 
 import (
 	"fmt"
-	"github.com/rizkycahyono97/online-shop-api/model/domain"
-	"log"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -68,17 +66,17 @@ func InitDB() {
 	sqlDB.SetConnMaxLifetime(time.Hour) // Maximum amount of time a connection may be reused.
 
 	// Automatically migrate the Contact model to create or update the corresponding table.
-	if err := DB.AutoMigrate(
-		&domain.User{},
-		&domain.Product{},
-		&domain.Category{},
-		&domain.Cart{},
-		&domain.CartItems{},
-		&domain.Order{},
-		&domain.OrderItem{},
-		&domain.Payment{},
-	); err != nil {
-		panic(fmt.Sprintf("Failed to migrate database: %v", err))
-	}
-	log.Println("Database migrated successfully!")
+	//if err := DB.AutoMigrate(
+	//	&domain.User{},
+	//	&domain.Product{},
+	//	&domain.Category{},
+	//	&domain.Cart{},
+	//	&domain.CartItems{},
+	//	&domain.Order{},
+	//	&domain.OrderItem{},
+	//	&domain.Payment{},
+	//); err != nil {
+	//	panic(fmt.Sprintf("Failed to migrate database: %v", err))
+	//}
+	//log.Println("Database migrated successfully!")
 }
