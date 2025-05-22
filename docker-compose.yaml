@@ -1,0 +1,9 @@
+services:
+  mariadb-online-shop:
+    image: mariadb:latest
+    container_name: mariadb-online-shop
+    restart: no
+    env_file:
+      - .env
+    environment:
+      -
