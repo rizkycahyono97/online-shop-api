@@ -192,8 +192,9 @@ Berikut adalah daftar sebagian endpoint umum:
 
 Untuk menguji API Contact Form, Anda dapat menggunakan file koleksi Postman yang telah disediakan, import di Postman anda.
 
-```bash
-test/API 
+```
+test/postman/online-shop-api.postman_collection.json
+test/postman/online-shop-api.postman_environment.json
 ```
 
 ---
