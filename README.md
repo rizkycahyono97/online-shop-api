@@ -162,13 +162,10 @@ Berikut adalah daftar sebagian endpoint umum:
 
 ---
 
-## 👤 Role dan Hak Akses
+## Dokumentasi API dan Database
 
-| Role     | Hak Akses                                   |
-| -------- | ------------------------------------------- |
-| Customer | Melihat produk, transaksi, cart, pembayaran |
-| Admin    | Kelola produk, kategori, pembayaran, user   |
-
+* [API & ERD](https://whimsical.com/online-shop-api-6iQVU1SBouY8g8FzbBpJZd)
+* [Database](https://docs.google.com/spreadsheets/d/1Zg-7e6J1E3NViCJIR6_o4VSw4Xgrs0AGLXwjDx8IQqM/edit?usp=sharing)
 ---
 
 ## 🧩 Fitur Mendatang
