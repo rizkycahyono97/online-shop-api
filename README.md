@@ -21,19 +21,11 @@ Fitur yang tersedia:
 
 ### Environment Variables
 
-Buat file `.env` di root project dengan format seperti berikut:
+copy file `.env.example` menjadi `.env` di root project kamu:
 
 ```
-
-APP\_PORT=8080
-DB\_HOST=localhost
-DB\_PORT=3306
-DB\_USER=root
-DB\_PASSWORD=yourpassword
-DB\_NAME=online\_shop\_api
-JWT\_SECRET=yourjwtsecret
-
-````
+cp .env.example .env
+```
 ---
 
 ## 🚀 Menjalankan Aplikasi
