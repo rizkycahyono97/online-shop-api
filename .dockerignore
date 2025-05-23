@@ -1,0 +1,54 @@
+# Git files
+.git/
+.gitignore
+
+# app build result
+api-contact-form
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Dependency directories
+vendor/
+Godeps/
+node_modules/
+
+# Go build artifacts
+/bin/
+/build/
+/pkg/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+
+# Test binaries and coverage reports
+*.test
+tes.go
+coverage.out
+
+# Environment and configuration files
+.env
+
+# Miscellaneous
+*.md
+*.markdown
+
+# Ignore Docker-specific files if not needed in the image
+docker-compose.yml
+Dockerfile

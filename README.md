@@ -59,6 +59,14 @@ go run main.go
 
 ---
 
+## Menjalankan Dengan  Docker
+```bash
+docker compose build
+docker compose up -d
+```
+
+---
+
 ## 🧪 API Endpoint
 
 Berikut adalah daftar sebagian endpoint umum:
@@ -143,11 +151,13 @@ Berikut adalah daftar sebagian endpoint umum:
 
 ---
 
-## 📁 Struktur Folder (Sederhana)
+## 📁 Struktur Folder
 
 ```
 .
+├── config/
 ├── controllers/
+├── database/
 ├── services/
 ├── repositories/
 ├── middlewares/

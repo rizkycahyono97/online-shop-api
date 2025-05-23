@@ -1,6 +1,5 @@
 package controller
 
-import "C"
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rizkycahyono97/online-shop-api/helpers"
